@@ -25,6 +25,10 @@ string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxzBz58_XP
 string refreshTokenEndpoint = "https://test.salesforce.com";
 string refreshTokenPath = "/services/oauth2/token";
 string apiVersion = "v37.0";
+string startDateAndTime = "2018-01-07T07:10:38+00:00";
+string endDateAndTime = "2018-02-07T07:10:38+00:00";
+string sampleSObject = "Account";
+string namedLayoutInfo = "";
 
 public function main (string[] args) {
 
@@ -60,7 +64,7 @@ public function main (string[] args) {
     //io:println(jsonResponse);
 
     //calling the connector action sObjectBasicInfo()
-    jsonResponse, err = testSalesforce.sObjectBasicInfo("Account");
+    jsonResponse, err = testSalesforce.sObjectBasicInfo(sampleSObject);
     io:println("------------------------MAIN METHOD: sObjectBasicInfo()------------------------");
     io:println(jsonResponse);
 
@@ -69,7 +73,7 @@ public function main (string[] args) {
                                          "Name":"Express Logistics and Transport",
                                          "Global_POD__c":"UK"
                                      };
-    //jsonResponse, err = testSalesforce.createSObjectRecord("Account", createAccountJsonpayload);
+    //jsonResponse, err = testSalesforce.createSObjectRecord(sampleSObject, createAccountJsonpayload);
     io:println("------------------------MAIN METHOD: createSObject()---------------------------");
     //io:println(jsonResponse);
 
@@ -79,35 +83,40 @@ public function main (string[] args) {
     //io:println(jsonResponse);
 
     //calling the connector action sObjectDescribe()
-    jsonResponse, err = testSalesforce.sObjectDescribe("Account");
+    jsonResponse, err = testSalesforce.sObjectDescribe(sampleSObject);
     io:println("------------------------MAIN METHOD: sObejctDescribe()-------------------------");
+    io:println(jsonResponse);
+
+    //calling the connector action sObjectRowsByExternalId()
+    //jsonResponse, err = testSalesforce.upsertSObjectRowsByExternalId();
+    io:println("------------------------MAIN METHOD: sObjectRowsByExternalId()-----------------");
+    io:println(jsonResponse);
+
+    ////calling to the connector action sObjectRecordsGetDeleted()
+    //jsonResponse, err = testSalesforce.sObjectRecordsGetDeleted(sampleSObject, startDateAndTime, endDateAndTime);
+    //io:println("------------------------MAIN METHOD: sObjectRecordsGetDeleted()----------------");
+    //io:println(jsonResponse);
+    //
+    ////calling to the actionsObjectGetUpdated()
+    //jsonResponse, err = testSalesforce.sObjectGetUpdated(sampleSObject, startDateAndTime, endDateAndTime);
+    //io:println("------------------------MAIN METHOD: sObjectGetUpdated()-----------------------");
     //io:println(jsonResponse);
 
+    //calling to the connector action sObjectNamedLayouts()
+    jsonResponse, err = testSalesforce.sObjectNamedLayouts(sampleSObject, namedLayoutInfo);
+    io:println("--------------------------MAIN METHOD: sObjectNamedLayouts()---------------------");
+    io:println(jsonResponse);
 
+    //calling to the connector action sObjectBlobRetrieve()
+    string id = "";
+    string blobField = "";
+    blob blobResponse;
+    blobResponse, err = testSalesforce.sObjectBlobRetrieve(sampleSObject, id, blobField);
+    io:println("--------------------------MAIN METHOD: sObjectBlobRetrieve()-----------------");
+    io:println(blobResponse);
 
-    //calling the connector action createAccount()
-    //salesforce:Account account = {};
-    //account.Name = "Express Logistics and Transport";
-    //string id = "";
-    //
-    ////id, err = testSalesforce.createAccount(account);
-    //io:println("-----------------------MAIN METHOD: createAccount()----------------------------");
-    //if (err != null) {
-    //    io:println(id);
-    //} else {
-    //    io:println(err);
-    //}
-    //
-    //account.IsPartner = true;
-    //account.BillingCountry = "USA";
-    //boolean success;
-    ////success, err = testSalesforce.updateAccount("001L000000vmdARIAY", account);
-    //io:println("------------------------MAIN METHOD: updateAccount()---------------------------");
-    //if (success) {
-    //    io:println("SUCCESS!");
-    //} else {
-    //    io:println(err);
-    //}
-
-
+    //callinto the connector action sObjectApprovalLayouts()
+    jsonResponse, err = testSalesforce.sObjectApprovalLayouts();
+    io:println("---------------------------MAIN METHOD: sObjectApprovalLayouts()-------------");
+    io:println(jsonResponse);
 }

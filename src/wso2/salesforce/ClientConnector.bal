@@ -3,6 +3,7 @@ package src.wso2.salesforce;
 import org.wso2.ballerina.connectors.oauth2;
 import ballerina.net.http;
 import ballerina.io;
+import ballerina.net.uri;
 
 @Description {value:"Salesforcerest client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
@@ -23,6 +24,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
     http:HttpConnectorError e;
     error err = {};
+    json jsonresponse;
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
@@ -52,7 +54,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 
     @Description {value:"Lists the resources available for the specified API version"}
-    @Param {value:"requestingApiVersion: The api version to get resources"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action listResourcesByApiVersion () (json, error) {
@@ -61,14 +62,12 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
         string requestURI = BASE_URI + apiVersion;
         response, e = oauth2Connector.get(requestURI, request);
-        //io:println(response.getJsonPayload());
         json jsonResponse = response.getJsonPayload();
 
         return jsonResponse, err;
     }
 
     @Description {value:"Lists limits information for your organization"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action listOrganizationLimits () (json, error) {
@@ -77,14 +76,12 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
         string requestURI = BASE_URI + apiVersion + LIMITS_SUFFIX;
         response, e = oauth2Connector.get(requestURI, request);
-
         json jsonResponse = response.getJsonPayload();
 
         return jsonResponse, err;
     }
 
     @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
-    @Param {value:"apiVersion: the api version to send request"}
     @Return {value:"Array of available objects"}
     @Return {value:"Error occured"}
     action describeGlobal () (json, error) {
@@ -92,7 +89,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         http:InResponse response = {};
         int i = 0;
 
-        string requestURI = BASE_URI + apiVersion + DESCRIBE_GLOBAL_SUFIX;
+        string requestURI = BASE_URI + apiVersion + DESCRIBE_GLOBAL_SUFFIX;
 
         response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
@@ -101,7 +98,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 
     @Description {value:"Describes the individual metadata for the specified object"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
@@ -109,7 +105,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = BASE_URI + apiVersion + SOBJECT + sobjectName;
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName;
         response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
 
@@ -118,7 +114,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     //equals to create new record
     @Description {value:"Creates new records"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"payload: json payload containing record data"}
     @Return {value:"response message"}
@@ -127,7 +122,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = BASE_URI + apiVersion + DESCRIBE_GLOBAL_SUFIX + "/" + sobjectName;
+        string requestURI = BASE_URI + apiVersion + DESCRIBE_GLOBAL_SUFFIX + "/" + sobjectName;
         request.setJsonPayload(payload);
         response, e = oauth2Connector.post(requestURI, request);
         json jsonResponse = response.getJsonPayload();
@@ -138,7 +133,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
      specified external ID field"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"fieldId: The external field id"}
     @Param {value:"fieldValue: The external field value"}
@@ -149,7 +143,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = BASE_URI + apiVersion + SOBJECT + sobjectName + "/" + fieldId + "/" + fieldValue;
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName + "/" + fieldId + "/" + fieldValue;
         response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
 
@@ -157,7 +151,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 
     @Description {value:"Completely describes the individual metadata at all levels for the specified object"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
@@ -165,49 +158,157 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = BASE_URI + apiVersion + SOBJECT + sobjectName + SOBJECT_DESCRIBE_SUFFIX;
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName + SOBJECT_DESCRIBE_SUFFIX;
         response, e = oauth2Connector.get(requestURI, request);
         json jasonResponse = response.getJsonPayload();
 
         return jasonResponse, err;
     }
 
+    @Description {value:"Retrieves the list of individual records that have been deleted within the given timespan
+     for the specified object"}
+    @Param {value:"apiVersion: The api version to send request to"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"startTime: The start time of the time span"}
+    @Param {value:"endTime: The end time of the time span"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action sObjectRecordsGetDeleted (string sobjectName, string startTime, string endTime)
+    (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECT + sobjectName + "/deleted/?start=" +
+                            uri:encode(startTime, "utf-8") + "&end=" + uri:encode(endTime, "utf-8");
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Retrieves the list of individual records that have been updated (added or changed)
+     within the given timespan for the specified object"}
+    @Param {value:"apiVersion: The api version to send request to"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"startTime: The start time of the time span"}
+    @Param {value:"endTime: The end time of the time span"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action sObjectGetUpdated (string sobjectName, string startTime, string endTime)
+    (json, error) {
+        http:OutRequest requestMsg = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName + "/updated/?start=" +
+                            uri:encode(startTime, "utf-8") + "&end=" + uri:encode(endTime, "utf-8");
+        response, e = oauth2Connector.get(requestURI, requestMsg);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Retrieves information about alternate named layouts for a given object."}
+    @Param {value:"object: object name given"}
+    @Param {value:"alternateName: alternate named layouts for a given object"}
+    @Return {value:"response message"}
+    @Return {value:"error:error occured"}
+    action sObjectNamedLayouts (string object, string alternateName) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + object + NAMED_LAYOUTS_SUFFIX + alternateName;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Accesses records based on the specified object ID, can be used with external objects "}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action sObjectRows (string sobjectName, string rowId) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName + "/" + rowId;
+        response, e = oauth2Connector.get(requestURI, request);
+        jsonresponse = response.getJsonPayload();
+
+        return jsonresponse, err;
+    }
+
+    @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
+     specified external ID field"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"fieldId: The external field id"}
+    @Param {value:"fieldValue: The external field value"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action sObjectRowsByExternalId (string sobjectName, string fieldId, string fieldValue)
+    (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sobjectName + "/" + fieldId + "/" + fieldValue;
+        response, e = oauth2Connector.get(requestURI, request);
+        jsonresponse = response.getJsonPayload();
+
+        return jsonresponse, err;
+    }
+
+    @Description {value:"Retrieves the specified blob field from an individual record."}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"id:"}
+    @Param {value:"blobField: "}
+    action sObjectBlobRetrieve (string sObjectName, string id, string blobField) (blob, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + SOBJECTS + sObjectName + "/" + id + "/" + blobField;
+        response, e = oauth2Connector.get(requestURI, request);
+        blob blobResponse = response.getBinaryPayload();
+
+        return blobResponse, err;
+    }
+
+    //action sobjects/SObjectName/describe/approvalLayouts/
 
     @Description {value:"Updates an existing record"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"payload: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action sObjectUpdate (string sobjectName, string recordId, json payload) (http:Response, http:HttpConnectorError) {
-        http:Request requestMsg = {};
-        http:Response response = {};
+    action sObjectUpdate (string sobjectName, string recordId, json payload) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
 
         string requestURI = BASE_URI + apiVersion + "/sobjects/" + sobjectName + "/" + recordId;
-        requestMsg.setJsonPayload(payload);
-        response, e = oauth2Connector.patch(requestURI, requestMsg);
+        request.setJsonPayload(payload);
+        response, e = oauth2Connector.patch(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
 
-        return response, e;
+        return jsonResponse, err;
     }
 
     @Description {value:"If record exists, update it else inserts it"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"externalField: The external field id"}
     @Param {value:"fieldValueId: The external field value"}
     @Param {value:"payload: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action sObjectUpsert (string apiVersion, string sobject, string externalField, string fieldValueId, json payload)
-    (http:Response, http:HttpConnectorError) {
-        http:Request requestMsg = {};
-        http:Response response = {};
+    action sObjectUpsert (string sobject, string externalField, string fieldValueId, json payload)
+    (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
 
         string requestURI = "/services/data/" + apiVersion + "/sobjects/" + sobject + "/" + externalField + "/" + fieldValueId;
-        requestMsg.setJsonPayload(payload);
-        response, e = oauth2Connector.patch(requestURI, requestMsg);
+        request.setJsonPayload(payload);
+        response, e = oauth2Connector.patch(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
 
-        return response, e;
+        return jsonResponse, err;
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
