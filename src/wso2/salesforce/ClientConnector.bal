@@ -244,7 +244,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"fieldId: The external field id"}
     @Param {value:"fieldValue: The external field value"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured"}
     action sObjectRowsByExternalId (string sobjectName, string fieldId, string fieldValue)
     (json, error) {
         http:OutRequest request = {};
@@ -258,9 +258,11 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 
     @Description {value:"Retrieves the specified blob field from an individual record."}
-    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"sObjectName: The relevant sobject name"}
     @Param {value:"id:"}
     @Param {value:"blobField: "}
+    @Return {value:"Binary data for the required blob"}
+    @Return {value:"Error occured"}
     action sObjectBlobRetrieve (string sObjectName, string id, string blobField) (blob, error) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -272,8 +274,316 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         return blobResponse, err;
     }
 
-    //action sobjects/SObjectName/describe/approvalLayouts/
+    @Description {value:"Get an approval layout description for a specified object and/or specified process"}
+    @Param {value:"sObjectName:The relevant SObject name"}
+    @Param {value:"approvalProcessName: required approval process"}
+    @Return {value:"Returns a list of approval layouts for a specified object in json format"}
+    @Return {value:"Error occured"}
+    action sObjectApprovalLayouts (string sObjectName, string approvalProcessName) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        json jsonResponse;
 
+        if (approvalProcessName != null) {
+            //To get an approval layout description for a particular approval process
+            string requestURI = BASE_URI + SOBJECTS + sObjectName + APPROVAL_LAYOUT_SUFFIX + approvalProcessName;
+            response, e = oauth2Connector.get(requestURI, request);
+            jsonResponse = response.getJsonPayload();
+        } else {
+            string requestURI = BASE_URI + SOBJECTS + sObjectName + APPROVAL_LAYOUT_SUFFIX;
+            response, e = oauth2Connector.get(requestURI, request);
+            jsonResponse = response.getJsonPayload();
+        }
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Get a  a list of compact layouts for a specific object"}
+    @Param {value:"sObjectName: The relevant SObject name"}
+    @Return {value:"Returns a list of compact layouts for a specific object"}
+    @Return {value:"Error occured"}
+    action sObjectCompactLayouts (string sObjectName) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + SOBJECTS + sObjectName + COMPACT_LAYOUT_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Get a list of layouts and descriptions (with a list of fields and the layout name)"}
+    @Param {value:"sObjectName: The relevant SObject name"}
+    @Param {value:"recordTypeId: Id of the relevant record type"}
+    @Return {value:"Returns a list of layouts and descriptions in Json format"}
+    @Return {value:"Error occured"}
+    action describeLayouts (string sObjectName, string recordTypeId) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        json jsonResponse;
+
+        if (sObjectName == null && recordTypeId == null) {
+            string requestURI = BASE_URI + SOBJECTS + "Global" + DESCRIBE_LAYOUT_SUFFIX;
+            response, e = oauth2Connector.get(requestURI, request);
+            jsonResponse = response.getJsonPayload();
+        }
+        else if (recordTypeId == null) {
+            string requestURI = BASE_URI + SOBJECTS + sObjectName + DESCRIBE_LAYOUT_SUFFIX;
+            response, e = oauth2Connector.get(requestURI, request);
+            jsonResponse = response.getJsonPayload();
+        } else {
+            string requestURI = BASE_URI + SOBJECTS + sObjectName + DESCRIBE_LAYOUT_SUFFIX + recordTypeId;
+            response, e = oauth2Connector.get(requestURI, request);
+            jsonResponse = response.getJsonPayload();
+        }
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
+    @Return {value:"Json response message"}
+    @Return {value:"Error occured"}
+    action sObjectPlatformAction () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + PLATFORM_ACTION_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Get a specific object’s actions as well as global actions"}
+    @Param {value:"sObjectName: relevant object's name"}
+    @Return {value:"Return specific object's actions in a Json response"}
+    @Return {value:"Error occured"}
+    action sObjectQuickActions (string sObjectName) (json, errror) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sObjectName + QUICK_ACTIONS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Accesses records by traversing object relationships via friendly URLs,
+    can retrieve, update, or delete the record associated with the traversed relationship field"}
+    @Param {value:"sObjectName: relevant object's name"}
+    @Param {value:"id: object's id"}
+    @Param {value:"relationship_field_name: "}
+    action sObjectRelationships (string sObjectName, string id, string relationshipFieldName) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sObjectName + "/" + id + "/" + relationshipFieldName;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of suggested Salesforce Knowledge articles for a case, work order, or work order line item."}
+    @Param {value:""}
+    //To return suggested articles for a case, work order, or work order line item that is being created, use vXX.X/sobjects/SObject/suggestedArticles?language=article language&subject=subject&description=description. The SObject can be Case, WorkOrder, or WorkOrderLineItem. Suggestions are based on common keywords in the title, description, and other information that’s entered before the record has been saved and assigned an ID.
+    //For example: vXX.X/sobjects/Case/suggestedArticles?language=article language&subject=subject&description=description or vXX.X/sobjects/WorkOrder/suggestedArticles?language=article language&subject=subject&description=description.
+    //To return suggested articles for an existing record with an ID, use vXX.X/sobjects/SObject/ID/suggestedArticles?language=article language
+
+    @Description {value:"Use the HTTP GET method to get password expiration status,"}
+    @Param {value:"userId: unique id for the user"}
+    @Param {value:"password: password for the user"}
+    action getPasswordExpirationStatus (string userId, string password) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + "User" + "/" + userId + "/" + password;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Use the HTTP POST method to set the password"}
+    @Param {value:"userId: unique id for the user"}
+    @Param {value:"password: password for the user"}
+    action setPassword (string userId, string password) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + "User" + "/" + userId + "/" + password;
+        response, e = oauth2Connector.post(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Use the HTTP DELETE method to reset the password"}
+    @Param {value:"userId: unique id for the user"}
+    @Param {value:"password: password for the user"}
+    action deletePassword (string userId, string password) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + "User" + "/" + userId + "/" + password;
+        response, e = oauth2Connector.delete(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Gets the definition of a platform event in JSON format for a given event name."}
+    @Param {value:"Platform_Event_Name__e: "}
+    @Return {value:"returns definition of a platform event in JSON format"}
+    @Return {value:"Error occured"}
+    action platformEventSchemabyEventName (string Platform_Event_Name__e) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + Platform_Event_Name__e + "/eventSchema";
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Gets the definition of a platform event in JSON format for a given schema ID."}
+    @Param {value:"schemaId: "}
+    @Return {value:"returns the definition of a platform event in JSON format"}
+    @Return {value:"Error occured"}
+    action platformEventSchemabySchemaId (string schemaId) () {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + EVENT_SCHEMA_ID_SUFFIX + schemaId;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Get a list of custom actions:"}
+    @Return {value:" returns a list of general action types for the current organization in JSON format"}
+    @Return {value:"Error occured"}
+    action getInvocableActions () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + ACTIONS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Use standard actions to add more functionality to organization's applications."}
+    @Param {value:"actionType: standard action type"}
+    @Param {value:"actionName: name given to the action"}
+    @Return {value:" returns POST action's information in JSON format"}
+    @Return {value:"Error occured"}
+    action doInvocableAction (string actionType, string actionName) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + ACTIONS_SUFFIX + "/" + actionType + "/" + actionName;
+        response, e = oauth2Connector.post(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns detailed information about a list view, including the ID, the columns, and the SOQL query"}
+    @Param {value:"sObjectType: Type of the specific SObject"}
+    @Param {value:"queryLocator: "}
+    @Return {value:"Returns information about a list view in a JSON response"}
+    @Return {value:"Error occured"}
+    action listViewDescribe (string sObjectType, string queryLocator) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sObjectType + "/listviews/" + queryLocator + "/describe";
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Executes the SOQL query for the list view, returns the resulting data and presentation information"}
+    action listViewResults (string sObjectType, string listViewId) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sObjectType + "/listviews/" + listViewId + "/results";
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Executes a simple RESTful search using parameters instead of a SOSL clause."}
+    action parameterizedSearch (string searchString) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + "/parameterizedSearch/" + "?q=" + searchString;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of all approval processes"}
+    action processApprovals () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + PROCESS_APPROVALS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of all active workflow rules. If a rule has actions, the actions will be listed under the rule."}
+    action getProcessRules () () {
+        //To get a list of the workflow rules or to trigger one or more workflow rules, the URI is: /vXX.X/process/rules/
+        //To get the rules for a particular object: /vXX.X/process/rules/SObjectName
+        //To get the metadata for a particular rule: /vXX.X/process/rules/SObjectName/workflowRuleId
+
+    }
+
+    @Description {value:"Executes the specified SOQL query"}
+    @Param {value:"queryString: The request SOQL query"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action query (string queryString) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + "/query/?q=" + queryString;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"QueryAll will return records that have been deleted because of a merge or delete, archived Task
+     and Event records"}
+    @Param {value:"queryString: The request SOQL query"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action queryAll (string queryString) (http:Response, http:HttpConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + "/queryAll/?q=" + queryString;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     @Description {value:"Updates an existing record"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"payload: json payload containing record data"}

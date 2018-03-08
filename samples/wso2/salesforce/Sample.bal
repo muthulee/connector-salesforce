@@ -70,9 +70,9 @@ public function main (string[] args) {
 
     //calling the connector action createSObjectRecord()
     json createAccountJsonpayload = {
-                                         "Name":"Express Logistics and Transport",
-                                         "Global_POD__c":"UK"
-                                     };
+                                        "Name":"Express Logistics and Transport",
+                                        "Global_POD__c":"UK"
+                                    };
     //jsonResponse, err = testSalesforce.createSObjectRecord(sampleSObject, createAccountJsonpayload);
     io:println("------------------------MAIN METHOD: createSObject()---------------------------");
     //io:println(jsonResponse);
@@ -103,20 +103,41 @@ public function main (string[] args) {
     //io:println(jsonResponse);
 
     //calling to the connector action sObjectNamedLayouts()
-    jsonResponse, err = testSalesforce.sObjectNamedLayouts(sampleSObject, namedLayoutInfo);
+    //jsonResponse, err = testSalesforce.sObjectNamedLayouts(sampleSObject, namedLayoutInfo);
     io:println("--------------------------MAIN METHOD: sObjectNamedLayouts()---------------------");
-    io:println(jsonResponse);
+    //io:println(jsonResponse);
 
     //calling to the connector action sObjectBlobRetrieve()
     string id = "";
     string blobField = "";
     blob blobResponse;
-    blobResponse, err = testSalesforce.sObjectBlobRetrieve(sampleSObject, id, blobField);
+    //blobResponse, err = testSalesforce.sObjectBlobRetrieve(sampleSObject, id, blobField);
     io:println("--------------------------MAIN METHOD: sObjectBlobRetrieve()-----------------");
-    io:println(blobResponse);
+    //io:println(blobResponse);
 
     //callinto the connector action sObjectApprovalLayouts()
-    jsonResponse, err = testSalesforce.sObjectApprovalLayouts();
+    //jsonResponse, err = testSalesforce.sObjectApprovalLayouts();
     io:println("---------------------------MAIN METHOD: sObjectApprovalLayouts()-------------");
-    io:println(jsonResponse);
+    //io:println(jsonResponse);
+
+    //callinto the connector action sObjectCompactLayouts()
+    //jsonResponse, err = testSalesforce.sObjectCompactLayouts();
+    io:println("---------------------------MAIN METHOD: sObjectCompactLayouts----------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action describeLayouts()
+    //jsonResponse, err = testSalesforce.describeLayouts();
+    io:println("---------------------------MAIN METHOD: describeLayouts()--------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action sObjectQuickActions()
+    //jsonResponse, err = testSalesforce.sObjectQuickActions();
+    io:println("---------------------------MAIN METHOD: sObjectQuickActions()----------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action sObjectQuickActions()
+    //jsonResponse, err = testSalesforce.sObjectQuickActions();
+    io:println("---------------------------MAIN METHOD: sObjectQuickActions()----------------");
+    //io:println(jsonResponse);
+
 }
