@@ -580,42 +580,187 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
 
+        // /vXX.X/queryAll/?q=SOQL query
+        // For retrieving additional query results if the initial results are too large:
+        // /vXX.X/queryAll/query identifier
         return jsonResponse, err;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    @Description {value:"Updates an existing record"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"payload: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
-    action sObjectUpdate (string sobjectName, string recordId, json payload) (json, error) {
+    //action Quick Actions/////////
+
+    @Description {value:"Returns the list of recently used list views for the given sObject type."}
+    action recentListView (string sObjectType) (json, error) {
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = BASE_URI + apiVersion + "/sobjects/" + sobjectName + "/" + recordId;
-        request.setJsonPayload(payload);
-        response, e = oauth2Connector.patch(requestURI, request);
+        string requestURI = BASE_URI + apiVersion + SOBJECTS + sObjectType + RECENT_LISTVIEW_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
 
         return jsonResponse, err;
     }
 
-    @Description {value:"If record exists, update it else inserts it"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"externalField: The external field id"}
-    @Param {value:"fieldValueId: The external field value"}
-    @Param {value:"payload: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
-    action sObjectUpsert (string sobject, string externalField, string fieldValueId, json payload)
-    (json, error) {
+    @Description {value:"Gets the most recently accessed items that were viewed or referenced by the current user"}
+    action recentlyViewedItems () (json, error) {
         http:OutRequest request = {};
         http:InResponse response = {};
 
-        string requestURI = "/services/data/" + apiVersion + "/sobjects/" + sobject + "/" + externalField + "/" + fieldValueId;
-        request.setJsonPayload(payload);
-        response, e = oauth2Connector.patch(requestURI, request);
+        string requestURI = BASE_URI + apiVersion + RECENTLY_VIEWD_ITEMS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Lists information about object record counts in your organization."}
+    action recordCount (string[] objectList) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        string csvObjectList = "";
+        int i = 0;
+
+        //reading the string array and concatenating to a comma separated single string
+        foreach element in objectList {
+            while (i < lengthof objectList) {
+                csvObjectList = csvObjectList + "," + objectList[i];
+                i = i + 1;
+            }
+        }
+        string requestURI = BASE_URI + apiVersion + RECORD_COUNT_SUFFIX + csvObjectList;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Gets the current user’s most relevant items.Relevant items include
+    records for objects in the user’s global search scope and also most recently used (MRU) objects."}
+    action relevantItems () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + DESCRIBE_GLOBAL_SUFFIX + RELEVANT_ITEMS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns the existing Knowledge language settings,
+    including the default knowledge language and a list of supported Knowledge language information."}
+    action retrieveKnowledgeLanguageSettings () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + RETRIEVE_KNOWLEDGE_LANGUAGE_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Executes the specified SOSL search."}
+    action search (string SOSLSearchString) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        //The search string must be URL-encoded.
+        string requestURI = BASE_URI + apiVersion + SEARCH_SUFFIX + SOSLSearchString;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns an ordered list of objects in the default global search scope of a logged-in user."}
+    action searchScopeAndOrder () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SEARCH_SUFFIX + SEARCH_SCOPE_ORDER_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns search result layout information for the objects in the query string."}
+    action searchResultLayouts (string[] objectList) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        string csvObjectList = "";
+        int i = 0;
+
+        //reading the string array and concatenating to a comma separated single string
+        foreach element in objectList {
+            while (i < lengthof objectList) {
+                csvObjectList = csvObjectList + "," + objectList[i];
+                i = i + 1;
+            }
+        }
+        string requestURI = BASE_URI + apiVersion + SEARCH_RESULT_LAYOUT_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of suggested records whose names match the user’s search string."}
+    action searchSuggestedRecords (string searchString, string objectTypes) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SEARCH_SUGGESTED_RECORD_SUFFIX + searchString + "&sobject=" + objectTypes;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of Salesforce Knowledge article titles that match the user’s search query string."}
+    action searchSuggestedArticleTitleMatches (string searchString, string articleLanguage, string articlePublicationStatus) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SEARCH_SUGGEST_TITLE_SUFFIX + searchString + "&language=" + articleLanguage + "&publishStatus=" + articlePublicationStatus;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of suggested searches based on the user’s query string text matching searches
+    that other users have performed in Salesforce Knowledge."}
+    action searchSuggestedQueries (string searchString, string languageOfQuery) (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + SEARCH_SUGGESTED_QUERIES + searchString + "&language=" + languageOfQuery;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Returns a list of all tabs—including Lightning page tabs—available to the current user"}
+    action getAllTabs () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + TABS_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
+        json jsonResponse = response.getJsonPayload();
+
+        return jsonResponse, err;
+    }
+
+    @Description {value:"Gets the list of icons and colors used by themes in the Salesforce application."}
+    action getThemes () (json, error) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+
+        string requestURI = BASE_URI + apiVersion + THEMES_SUFFIX;
+        response, e = oauth2Connector.get(requestURI, request);
         json jsonResponse = response.getJsonPayload();
 
         return jsonResponse, err;
