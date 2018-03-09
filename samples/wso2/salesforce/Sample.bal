@@ -41,7 +41,7 @@ public function main (string[] args) {
     json jsonResponse;
 
     /////////////////////////////////////////////////////////////////////////////////////////////
-    //                                  calling the connector actions
+    //                                  calling the connector actions                         //
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     salesforce:ApiVersion[] apiVersions = [];
@@ -140,4 +140,137 @@ public function main (string[] args) {
     io:println("---------------------------MAIN METHOD: sObjectQuickActions()----------------");
     //io:println(jsonResponse);
 
+    //callinto the connector action sObjectRelationships();
+    jsonResponse, err = testSalesforce.sObjectRelationships();
+    io:println("---------------------------MAIN METHOD: sObjectRelationships()----------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action setPassword();
+    jsonResponse, err = testSalesforce.setPassword();
+    io:println("---------------------------MAIN METHOD: setPassword()-------------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action deletePassword();
+    jsonResponse, err = testSalesforce.deletePassword();
+    io:println("---------------------------MAIN METHOD: deletePassword();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action platformEventSchemabyEventName();
+    jsonResponse, err = testSalesforce.platformEventSchemabyEventName();
+    io:println("---------------------------MAIN METHOD: platformEventSchemabyEventName();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action platformEventSchemabySchemaId();
+    jsonResponse, err = testSalesforce.deletePassword();
+    io:println("---------------------------MAIN METHOD: deletePassword();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action platformEventSchemabySchemaId();
+    jsonResponse, err = testSalesforce.deletePassword();
+    io:println("---------------------------MAIN METHOD: deletePassword();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action platformEventSchemabySchemaId();
+    jsonResponse, err = testSalesforce.deletePassword();
+    io:println("---------------------------MAIN METHOD: deletePassword();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action getInvocableActions();
+    jsonResponse, err = testSalesforce.getInvocableActions();
+    io:println("---------------------------MAIN METHOD: getInvocableActions();---------------------");
+    //io:println(jsonResponse);
+
+    jsonResponse, err = testSalesforce.doInvocableAction();
+    io:println("---------------------------MAIN METHOD: doInvocableAction();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action listViewDescribe();
+    jsonResponse, err = testSalesforce.listViewDescribe();
+    io:println("---------------------------MAIN METHOD: listViewDescribe();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action parameterizedSearch();
+    jsonResponse, err = testSalesforce.parameterizedSearch();
+    io:println("---------------------------MAIN METHOD: parameterizedSearch();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action processApprovals();
+    jsonResponse, err = testSalesforce.processApprovals();
+    io:println("---------------------------MAIN METHOD: processApprovals();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action getProcessRules();
+    jsonResponse, err = testSalesforce.getProcessRules();
+    io:println("---------------------------MAIN METHOD: getProcessRules();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action query();
+    jsonResponse, err = testSalesforce.query();
+    io:println("---------------------------MAIN METHOD: query();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action queryAll();
+    jsonResponse, err = testSalesforce.queryAll();
+    io:println("---------------------------MAIN METHOD: queryAll();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action recentListView();
+    jsonResponse, err = testSalesforce.recentListView();
+    io:println("---------------------------MAIN METHOD: recentListView();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action recordCount();
+    jsonResponse, err = testSalesforce.recordCount();
+    io:println("---------------------------MAIN METHOD: recordCount();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action relevantItems();
+    jsonResponse, err = testSalesforce.relevantItems();
+    io:println("---------------------------MAIN METHOD: relevantItems();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action retrieveKnowledgeLanguageSettings();
+    jsonResponse, err = testSalesforce.retrieveKnowledgeLanguageSettings();
+    io:println("---------------------------MAIN METHOD: retrieveKnowledgeLanguageSettings();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action search();
+    jsonResponse, err = testSalesforce.search();
+    io:println("---------------------------MAIN METHOD: search();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action searchScopeAndOrder();
+    jsonResponse, err = testSalesforce.searchScopeAndOrder();
+    io:println("---------------------------MAIN METHOD: searchScopeAndOrder();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action searchResultLayouts();
+    jsonResponse, err = testSalesforce.searchResultLayouts();
+    io:println("---------------------------MAIN METHOD: searchResultLayouts();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action searchSuggestedRecords();
+    jsonResponse, err = testSalesforce.searchSuggestedRecords();
+    io:println("---------------------------MAIN METHOD: searchSuggestedRecords();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action searchSuggestedArticleTitleMatches();
+    jsonResponse, err = testSalesforce.searchSuggestedArticleTitleMatches();
+    io:println("---------------------------MAIN METHOD: searchSuggestedArticleTitleMatches();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action searchSuggestedQueries();
+    jsonResponse, err = testSalesforce.searchSuggestedQueries();
+    io:println("---------------------------MAIN METHOD: searchSuggestedQueries();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action getAllTabs();
+    jsonResponse, err = testSalesforce.getAllTabs();
+    io:println("---------------------------MAIN METHOD: getAllTabs();---------------------");
+    //io:println(jsonResponse);
+
+    //callinto the connector action getThemes();
+    jsonResponse, err = testSalesforce.getThemes();
+    io:println("---------------------------MAIN METHOD: getThemes();---------------------");
+    //io:println(jsonResponse);
 }
