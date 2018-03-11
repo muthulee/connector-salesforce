@@ -9,3 +9,4 @@ Connector for Salesforce REST API in Ballerina
 - Get, create, update, delete records
 - Get, create, update, delete records by external ID
 - Get updated and deleted records within time period
+- Query and explain query

@@ -21,3 +21,26 @@ public struct SalesforceConnectorError {
     http:HttpConnectorError connectionError;
     SalesforceError[] salesforceErrors;
 }
+
+public struct QueryResult {
+    boolean done;
+    int totalSize;
+    json[] records;
+    string nextRecordsUrl;
+}
+
+public struct QueryPlan {
+    int cardinality;
+    string[] fields;
+    string leadingOperationType;
+    FeedbackNote[] notes;
+    float relativeCost;
+    int sobjectCardinality;
+    string sobjectType;
+}
+
+public struct FeedbackNote {
+    string description;
+    string[] fields;
+    string tableEnumOrId;
+}

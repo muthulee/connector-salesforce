@@ -6,6 +6,7 @@ public const string SOBJECTS = "sobjects";
 public const string CREATE_ACCOUNT_SUFFIX = "/sobjects/Account";
 public const string LIMITS_SUFFIX = "limits";
 public const string DESCRIBE = "describe";
+public const string QUERY = "query";
 public const string APPROVAL_LAYOUT_SUFFIX = "/describe/approvalLayouts/";
 public const string COMPACT_LAYOUT_SUFFIX = "/describe/compactLayouts";
 public const string DESCRIBE_LAYOUT_SUFFIX = "/describe/layouts/";
@@ -29,3 +30,10 @@ public const string TABS_SUFFIX = "/tabs/";
 public const string THEMES_SUFFIX = "/theme";
 
 public const string NAMED_LAYOUTS_SUFFIX = "/describe/namedLayouts/";
+
+//=================================  SObjects  ==========================================//
+public const string ACCOUNT = "Account";
+public const string LEAD = "Lead";
+public const string CONTACT = "Contact";
+public const string OPPORTUNITY = "Opportunity";
+public const string PRODUCT = "Product";
