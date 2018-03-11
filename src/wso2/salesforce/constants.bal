@@ -2,10 +2,10 @@ package src.wso2.salesforce;
 
 //Salesforce endpoints
 public const string BASE_URI = "/services/data";
-public const string DESCRIBE_GLOBAL_SUFFIX = "/sobjects";
+public const string SOBJECTS = "sobjects";
 public const string CREATE_ACCOUNT_SUFFIX = "/sobjects/Account";
-public const string LIMITS_SUFFIX = "/limits";
-public const string SOBJECT_DESCRIBE_SUFFIX = "/describe/";
+public const string LIMITS_SUFFIX = "limits";
+public const string DESCRIBE = "describe";
 public const string APPROVAL_LAYOUT_SUFFIX = "/describe/approvalLayouts/";
 public const string COMPACT_LAYOUT_SUFFIX = "/describe/compactLayouts";
 public const string DESCRIBE_LAYOUT_SUFFIX = "/describe/layouts/";
@@ -28,5 +28,4 @@ public const string SEARCH_SUGGESTED_QUERIES = "/search/suggestSearchQueries?q="
 public const string TABS_SUFFIX = "/tabs/";
 public const string THEMES_SUFFIX = "/theme";
 
-public const string SOBJECTS = "/sobjects/";
 public const string NAMED_LAYOUTS_SUFFIX = "/describe/namedLayouts/";
