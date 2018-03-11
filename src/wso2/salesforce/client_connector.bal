@@ -25,7 +25,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
-    @Return {value:"Error occured"}
+    @Return {value:"Error occured during oauth2 client invocation."}
     action listAvailableApiVersions () (json[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -82,7 +82,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
     @Return {value:"Array of available objects"}
-    @Return {value:"Error occured"}
+    @Return {value:"Error occured during oauth2 client invocation."}
     action describeGlobal () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -151,7 +151,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     @Description {value:"Creates new records"}
     @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"payload: json payload containing record data"}
+    @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action createRecord (string sObjectName, json record) (json, SalesforceConnectorError) {
@@ -168,9 +168,9 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description {value:"Creates new records"}
+    @Description {value:"Updates existing records"}
     @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"payload: json payload containing record data"}
+    @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action updateRecord (string sObjectName, string id, json record) (json, SalesforceConnectorError) {
@@ -187,8 +187,9 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
         return null, connectorError;
     }
 
-    @Description {value:"Accesses records based on the specified object ID, can be used with external objects "}
+    @Description {value:"Deletes existing records"}
     @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"id: The id of the relevant record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action deleteRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
@@ -207,20 +208,19 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
 
     // ============================ Create, update, delete records by External IDs ===================== //
 
-    @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
-     specified external ID field"}
+    @Description {value:"Accesses records based on the value of a specified external ID field"}
     @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"fieldId: The external field id"}
+    @Param {value:"fieldName: The external field name"}
     @Param {value:"fieldValue: The external field value"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action getRecordByExternalId (string sObjectName, string field, string fieldValue) (json, SalesforceConnectorError) {
+    action getRecordByExternalId (string sObjectName, string fieldName, string fieldValue) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{field}}/{{fieldValue}}`;
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldName}}/{{fieldValue}}`;
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
@@ -232,6 +232,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"fieldId: The external field id"}
     @Param {value:"fieldValue: The external field value"}
+    @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
     action upsertSObjectByExternalId (string sObjectName, string fieldId, string fieldValue, json record) (json, SalesforceConnectorError) {
@@ -251,7 +252,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     // ============================ Get updated and deleted records ===================== //
 
     @Description {value:"Retrieves the list of individual records that have been deleted within the given timespan for the specified object"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"startTime: The start time of the time span"}
     @Param {value:"endTime: The end time of the time span"}
@@ -273,7 +273,6 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 
     @Description {value:"Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object"}
-    @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"startTime: The start time of the time span"}
     @Param {value:"endTime: The end time of the time span"}
@@ -295,6 +294,12 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     }
 }
 
+    // ============================ function to check and set errors ===================== //
+
+@Description {value:"Function to check errors and set errors to relevant error types"}
+@Param {value:"response: http response"}
+@Param {value:"httpError: http connector error"}
+@Return {value:"SalesforceConnectorError struct type error"}
 function checkAndSetErrors (http:InResponse response, http:HttpConnectorError httpError) (SalesforceConnectorError) {
     SalesforceConnectorError connectorError;
     if (httpError != null) {
@@ -311,24 +316,4 @@ function checkAndSetErrors (http:InResponse response, http:HttpConnectorError ht
         }
     }
     return connectorError;
-}
-
-// TODO Move these structs to another package once https://github.com/ballerina-lang/ballerina/issues/4736 is fixed.//
-public struct ApiVersion {
-    string |version|;
-    string label;
-    string url;
-}
-
-
-public struct SalesforceError {
-    //string[] fields;
-    string message;
-    string errorCode;
-}
-
-public struct SalesforceConnectorError {
-    string[] messages;
-    http:HttpConnectorError connectionError;
-    SalesforceError[] salesforceErrors;
 }
