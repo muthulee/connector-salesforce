@@ -1,4 +1,4 @@
-package src.wso2.salesforce;
+package src.wso2.salesforce_primary;
 
 //Salesforce endpoints
 public const string BASE_URI = "/services/data";

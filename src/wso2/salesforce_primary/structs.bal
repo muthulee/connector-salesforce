@@ -1,4 +1,4 @@
-package src.wso2.salesforce;
+package src.wso2.salesforce_primary;
 
 import ballerina.net.http;
 

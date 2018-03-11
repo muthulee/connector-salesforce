@@ -1,4 +1,4 @@
-package src.wso2.salesforce;
+package src.wso2.salesforce_primary;
 
 import ballerina.net.http;
 import ballerina.net.uri;
@@ -13,7 +13,7 @@ import org.wso2.ballerina.connectors.oauth2;
 @Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
 @Param {value:"apiVersion: API version available"}
-public connector core_client_connector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
+public connector CoreClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
                                         string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
@@ -153,18 +153,23 @@ public connector core_client_connector (string baseUrl, string accessToken, stri
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action createRecord (string sObjectName, json record) (json, SalesforceConnectorError) {
+    action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        string id = "";
 
         string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.post(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
+        json jsonResponse = response.getJsonPayload();
 
-        return response.getJsonPayload(), connectorError;
+        if (connectorError == null){
+            id = jsonResponse.id.toString();
+        }
+        return  id, connectorError;
     }
 
     @Description {value:"Updates existing records"}
@@ -292,6 +297,7 @@ public connector core_client_connector (string baseUrl, string accessToken, stri
         return response.getJsonPayload(), connectorError;
     }
 
+    @Description {value:""}
     action query (string query) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -347,15 +353,15 @@ public connector core_client_connector (string baseUrl, string accessToken, stri
         return result, connectorError;
     }
 
-    action explainQuery (string query) (QueryPlan[], SalesforceConnectorError) {
+    action explainQueryOrReport (string queryOrId) (QueryPlan[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        query = query.replaceAll("\\s+", "+");
+        queryOrId = queryOrId.replaceAll("\\s+", "+");
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{query}}`;
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{queryOrId}}`;
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 

@@ -3,19 +3,19 @@ package samples.wso2.salesforce;
 import ballerina.io;
 import ballerina.net.http;
 import ballerina.time;
-import src.wso2.salesforce;
+import src.wso2.salesforce_primary;
 
 http:HttpConnectorError e;
 http:InResponse response = {};
 error err = {};
 
 
-string baseUrl = "https://wso2--wsbox.cs8.my.salesforce.com";
+string baseUrl = "https://wso2--wsbox.cs8.my.salesforce_primary.com";
 string accessToken = "00DL0000002ASPS!ASAAQHyEs5qD9BzTEevUWAIUOjGh0e9zyVIojgS1dLwNXhlMBXGre8IwNoruuV6joCjAR0qG1B8KhNOxYSczwOuRmCEQU6LG";
 string clientId = "3MVG9MHOv_bskkhSA6dmoQao1M5bAQdCQ1ePbHYQKaoldqFSas7uechL0yHewu1QvISJZi2deUh5FvwMseYoF";
 string clientSecret = "1164810542004702763";
 string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxzBz58_XPXLUMpHViE8EqTjdV7pvnI1xq8pMfOA";
-string refreshTokenEndpoint = "https://test.salesforce.com";
+string refreshTokenEndpoint = "https://test.salesforce_primary.com";
 string refreshTokenPath = "/services/oauth2/token";
 string apiVersion = "v37.0";
 string sampleSObjectAccount = "Account";
@@ -27,11 +27,11 @@ string namedLayoutInfo = "";
 
 public function main (string[] args) {
 
-    endpoint<salesforce:core_client_connector> salesforceCoreConnector {
-        create salesforce:core_client_connector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
+    endpoint<salesforce_primary:CoreClientConnector> salesforceCoreConnector {
+        create salesforce_primary:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
     }
 
-    salesforce:SalesforceConnectorError err;
+    salesforce_primary:SalesforceConnectorError err;
     json jsonResponse;
 
     time:Time now = time:currentTime();
@@ -119,7 +119,7 @@ public function main (string[] args) {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     // ============================ Create, update, delete records by External IDs ===================== //
 
-    // TODO Make this part work by creating an actual external ID in salesforce
+    // TODO Make this part work by creating an actual external ID in salesforce_primary
     io:println("\n------------------------MAIN METHOD: Handling records by External IDs-----------");
     account.Name = "Updated Logistics and Transport";
     jsonResponse, err = salesforceCoreConnector.upsertSObjectByExternalId(sampleSObjectAccount, "id__c", "123456", account);
@@ -143,7 +143,7 @@ public function main (string[] args) {
     io:println(string `Found {{lengthof jsonResponse.ids}} ids of updated records`);
 
     io:println("\n------------------------MAIN METHOD: Executing queries----------------");
-    salesforce:QueryResult queryResult;
+    salesforce_primary:QueryResult queryResult;
 
     queryResult, err = salesforceCoreConnector.query("SELECT name FROM Account");
     checkErrors(err);
@@ -154,9 +154,9 @@ public function main (string[] args) {
         io:println(string `Found {{lengthof queryResult.records}} results. Next result URL: {{queryResult.nextRecordsUrl}}`);
     }
 
-    salesforce:QueryPlan[] queryPlans;
+    salesforce_primary:QueryPlan[] queryPlans;
 
-    queryPlans, err = salesforceCoreConnector.explainQuery("SELECT name FROM Account");
+    queryPlans, err = salesforceCoreConnector.explainQueryOrReport("SELECT name FROM Account");
     checkErrors(err);
     io:println(string `Found {{lengthof queryPlans}} query plans`);
     io:println(queryPlans);
@@ -209,7 +209,7 @@ public function main (string[] args) {
 
 }
 
-function checkErrors (salesforce:SalesforceConnectorError err) {
+function checkErrors (salesforce_primary:SalesforceConnectorError err) {
     if (err != null) {
         if (err.connectionError != null) {
             io:println(string `Connection error: {{err.connectionError.message}}`);
