@@ -2,7 +2,7 @@ package src.wso2.salesforce_primary;
 
 import ballerina.net.http;
 import ballerina.net.uri;
-import org.wso2.ballerina.connectors.oauth2;
+import test.wso2.salesforce as oauth2;
 
 @Description {value:"Salesforcerest client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
@@ -14,7 +14,7 @@ import org.wso2.ballerina.connectors.oauth2;
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
 @Param {value:"apiVersion: API version available"}
 public connector CoreClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                        string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
+                                      string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
         create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
@@ -158,18 +158,14 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
-        string id = "";
 
         string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.post(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
-        json jsonResponse = response.getJsonPayload();
 
-        if (connectorError == null){
-            id = jsonResponse.id.toString();
-        }
-        return  id, connectorError;
+        json jsonRespone  = response.getJsonPayload();
+        return jsonRespone.id.toString(), connectorError;
     }
 
     @Description {value:"Updates existing records"}
@@ -182,13 +178,17 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        boolean isUpdated;
 
         string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.patch(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
-        return connectorError == null, connectorError;
+        if (connectorError == null) {
+            isUpdated = true;
+        }
+        return isUpdated, connectorError;
     }
 
     @Description {value:"Deletes existing records"}
@@ -196,17 +196,21 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"id: The id of the relevant record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
+    action deleteRecord (string sObjectName, string id) (boolean, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        boolean isDeleted;
 
         string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
         response, err = oauth2Connector.delete(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
-        return response.getJsonPayload(), connectorError;
+        if (connectorError == null) {
+            isDeleted = true;
+        }
+        return isDeleted, connectorError;
     }
 
 
@@ -297,7 +301,6 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description {value:""}
     action query (string query) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -353,15 +356,15 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
-    action explainQueryOrReport (string queryOrId) (QueryPlan[], SalesforceConnectorError) {
+    action explainQuery (string query) (QueryPlan[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        queryOrId = queryOrId.replaceAll("\\s+", "+");
+        query = query.replaceAll("\\s+", "+");
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{queryOrId}}`;
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{query}}`;
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
