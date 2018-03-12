@@ -39,7 +39,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"accountRecord: json payload containing Account record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action createAccount (json accountRecord) (json, sfp:SalesforceConnectorError) {
+    action createAccount (json accountRecord) (string, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
         string accountId;
 
@@ -53,7 +53,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"accountRecord: json payload containing Account record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action updateAccount (string accountId, json accountRecord) (json, sfp:SalesforceConnectorError) {
+    action updateAccount (string accountId, json accountRecord) (boolean, sfp:SalesforceConnectorError) {
         boolean isUpdated;
         sfp:SalesforceConnectorError sfConnectorError;
 

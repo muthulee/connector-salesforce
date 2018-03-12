@@ -24,7 +24,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured"}
     action listAvailableApiVersions () (json[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -47,7 +47,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     @Description {value:"Lists the resources available for the specified API version"}
     @Return {value:"response message"}
-    @Return {value:"Error occurred during oauth2 client invocation."}
+    @Return {value:"Error occurred"}
     action listResourcesByApiVersion () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -63,7 +63,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     @Description {value:"Lists limits information for your organization"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured "}
     action listOrganizationLimits () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -81,7 +81,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
     @Return {value:"Array of available objects"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured "}
     action describeGlobal () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -98,7 +98,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Describes the individual metadata for the specified object"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured "}
     action getSObjectBasicInfo (string sobjectName) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -115,7 +115,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Completely describes the individual metadata at all levels for the specified object"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action describeSObject (string sObjectName) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -134,7 +134,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Accesses records based on the specified object ID, can be used with external objects "}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action getRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -152,7 +152,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -164,7 +164,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         response, err = oauth2Connector.post(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
-        json jsonRespone  = response.getJsonPayload();
+        json jsonRespone = response.getJsonPayload();
         return jsonRespone.id.toString(), connectorError;
     }
 
@@ -172,7 +172,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action updateRecord (string sObjectName, string id, json record) (boolean, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -195,7 +195,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"id: The id of the relevant record supposed to be deleted"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action deleteRecord (string sObjectName, string id) (boolean, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -242,7 +242,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"fieldValue: The external field value"}
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action upsertSObjectByExternalId (string sObjectName, string fieldId, string fieldValue, json record) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -264,7 +264,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"startTime: The start time of the time span"}
     @Param {value:"endTime: The end time of the time span"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured."}
     action getDeletedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -285,7 +285,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"startTime: The start time of the time span"}
     @Param {value:"endTime: The end time of the time span"}
     @Return {value:"response message"}
-    @Return {value:"Error occured during oauth2 client invocation."}
+    @Return {value:"Error occured"}
     action getUpdatedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -301,6 +301,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
+    @Description { value:"Executes the specified SOQL query"}
+    @Param { value:"query: The request SOQL query"}
+    @Return { value:"returns QueryResult struct"}
+    @Return { value:"Error occured" }
     action query (string query) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -328,6 +332,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
+    @Description { value:"If the queryAll results are too large, retrieve the next batch of results using nextRecordUrl"}
+    @Param { value:"nextRecordsUrl: The url sent with first batch of queryAll results to get the next batch"}
+    @Return { value:"returns QueryResult struct"}
+    @Return { value:"Error occured" }
     action nextQueryResult (string nextRecordsUrl) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -356,15 +364,52 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
-    action explainQuery (string query) (QueryPlan[], SalesforceConnectorError) {
+    @Description {value:"QueryAll will return records that have been deleted because of a merge or delete, archived Task
+     and Event records"}
+    @Param {value:"apiVersion: The api version to send request to"}
+    @Param {value:"queryString: The request SOQL query"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action getAllQueries (string queryAllString) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        query = query.replaceAll("\\s+", "+");
+        queryAllString = queryAllString.replaceAll("\\s+", "+");
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{query}}`;
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERYALL}}/?q={{queryAllString}}`;
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        QueryResult result = {};
+
+        if (connectorError != null) {
+            return result, connectorError;
+        }
+
+        json jsonResponse = response.getJsonPayload();
+        result.done, _ = (boolean)jsonResponse.done;
+        result.totalSize, _ = (int)jsonResponse.totalSize;
+        result.records, _ = (json[])jsonResponse.records;
+        result.nextRecordsUrl, _ = (string)jsonResponse.nextRecordsUrl;
+
+        return result, connectorError;
+    }
+
+    @Description { value:"Get feedback on how Salesforce will execute the query, report, or list view"}
+    @Param { value:"queryReportOrListview: The parameter to get feedback on"}
+    @Return { value:"response message"}
+    @Return { value:"Error occured" }
+    action explainQueryReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        queryReportOrListview = queryReportOrListview.replaceAll("\\s+", "+");
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{queryReportOrListview}}`;
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
@@ -390,7 +435,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 @Description {value:"Function to check errors and set errors to relevant error types"}
 @Param {value:"response: http response"}
 @Param {value:"httpError: http connector error"}
-@Return {value:"SalesforceConnectorError struct type error"}
+@Return {value:"Error occured"}
 function checkAndSetErrors (http:InResponse response, http:HttpConnectorError httpError) (SalesforceConnectorError) {
     SalesforceConnectorError connectorError;
     if (httpError != null) {

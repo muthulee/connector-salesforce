@@ -4,6 +4,7 @@ import ballerina.io;
 import ballerina.net.http;
 import ballerina.time;
 import src.wso2.salesforce_primary as sfp;
+import src.wso2.salesforce_secondary as sfs;
 
 http:HttpConnectorError e;
 http:InResponse response = {};
@@ -29,6 +30,10 @@ public function main (string[] args) {
 
     endpoint<sfp:CoreClientConnector> salesforceCoreConnector {
         create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
+    }
+
+    endpoint<sfs:ClientConnector> salesforceConnector {
+        create sfs:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
     }
 
     sfp:SalesforceConnectorError err;
@@ -106,7 +111,7 @@ public function main (string[] args) {
         io:println(string `Error occurred when updating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
     }
 
-     //TODO Error occurs due to empty payload
+    //TODO Error occurs due to empty payload
     boolean isDeleted;
     isDeleted, err = salesforceCoreConnector.deleteRecord(sampleSObjectAccount, id);
     if (isDeleted) {
@@ -156,7 +161,7 @@ public function main (string[] args) {
 
     sfp:QueryPlan[] queryPlans;
 
-    queryPlans, err = salesforceCoreConnector.explainQuery("SELECT name FROM Account");
+    queryPlans, err = salesforceCoreConnector.explainQueryReportOrListview("SELECT name FROM Account");
     checkErrors(err);
     io:println(string `Found {{lengthof queryPlans}} query plans`);
     io:println(queryPlans);
@@ -165,24 +170,24 @@ public function main (string[] args) {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // ============================ ACCOUNT SObject: get, create, update, delete ===================== //
 
-    //id, err = salesforceConnector.createAccount(account);
-    //if (err == null) {
-    //    io:println(string `Created {{sampleSObjectAccount}} with id: {{id}}`);
-    //} else {
-    //    io:println(string `Error occurred when creating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
-    //    return;
-    //}
-    //
-    //jsonResponse, err = salesforceConnector.getAccountById(id);
-    //io:println(string `Name of {{sampleSObjectAccount}} with id {{id}} is {{jsonResponse.Name.toString()}}`);
-    //
-    //account.Name = "ABC Pvt Ltd";
-    //isUpdated, err = salesforceConnector.updateAccount(id);
-    //if (isUpdated) {
-    //    io:println(string `{{sampleSObjectAccount}} successfully updated`);
-    //} else {
-    //    io:println(string `Error occurred when updating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
-    //}
+    id, err = salesforceConnector.createAccount(account);
+    if (err == null) {
+        io:println(string `Created {{sampleSObjectAccount}} with id: {{id}}`);
+    } else {
+        io:println(string `Error occurred when creating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
+        return;
+    }
+
+    jsonResponse, err = salesforceConnector.getAccountById(id);
+    io:println(string `Name of {{sampleSObjectAccount}} with id {{id}} is {{jsonResponse.Name.toString()}}`);
+
+    account.Name = "ABC Pvt Ltd";
+    isUpdated, err = salesforceConnector.updateAccount(id, account);
+    if (isUpdated) {
+        io:println(string `{{sampleSObjectAccount}} successfully updated`);
+    } else {
+        io:println(string `Error occurred when updating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
+    }
     //
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
     //// ============================ LEAD SObject: get, create, update, delete ===================== //
