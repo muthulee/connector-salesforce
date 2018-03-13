@@ -1,4 +1,4 @@
-package test.wso2.salesforce;
+package test.salesforce;
 
 import ballerina.net.http;
 

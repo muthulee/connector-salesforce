@@ -16,12 +16,12 @@
 // under the License.
 //
 
-package samples.wso2.salesforce;
+package samples.salesforce;
 
 import ballerina.io;
 import ballerina.time;
-import src.wso2.salesforce_primary as sfp;
-import src.wso2.salesforce_secondary as sfs;
+import src.salesforce_primary as sfp;
+import src.salesforce_secondary as sfs;
 
 string baseUrl = "https://wso2--wsbox.cs8.my.salesforce.com";
 string accessToken = "00DL0000002ASPS!ASAAQHyEs5qD9BzTEevUWAIUOjGh0e9zyVIojgS1dLwNXhlMBXGre8IwNoruuV6joCjAR0qG1B8KhNOxYSczwOuRmCEQU6LG";
@@ -276,7 +276,7 @@ public function main (string[] args) {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //// ========================= Opportunities SObject: get, create, update, delete =================== //
-
+    //
     //io:println("\n------------------------OPPORTUNITIES SObjecct Information-----------------------");
     //json responseOpportunity;
     //responseOpportunity, err = salesforceConnector.createOpportunity(opportunity);

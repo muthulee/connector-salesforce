@@ -16,7 +16,7 @@
 // under the License.
 //
 
-package src.wso2.salesforce_primary;
+package src.salesforce_primary;
 
 //Salesforce endpoints
 public const string BASE_URI = "/services/data";

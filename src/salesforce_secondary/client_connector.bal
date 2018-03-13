@@ -16,9 +16,9 @@
 // under the License.
 //
 
-package src.wso2.salesforce_secondary;
+package src.salesforce_secondary;
 
-import src.wso2.salesforce_primary as sfp;
+import src.salesforce_primary as sfp;
 
 @Description {value:"Salesforcerest client connector"}
 @Param {value:"baseUrl: The endpoint base url"}

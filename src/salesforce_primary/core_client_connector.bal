@@ -16,11 +16,11 @@
 // under the License.
 //
 
-package src.wso2.salesforce_primary;
+package src.salesforce_primary;
 
 import ballerina.net.http;
 import ballerina.net.uri;
-import test.wso2.salesforce as oauth2;
+import test.salesforce as oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
 @Description {value:"Salesforce core client connector"}
