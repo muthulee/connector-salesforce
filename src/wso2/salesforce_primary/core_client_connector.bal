@@ -3,6 +3,7 @@ package src.wso2.salesforce_primary;
 import ballerina.net.http;
 import ballerina.net.uri;
 import test.wso2.salesforce as oauth2;
+//import org.wso2.ballerina.connectors.oauth2;
 
 @Description {value:"Salesforcerest client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
@@ -112,7 +113,8 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description {value:"Completely describes the individual metadata at all levels for the specified object"}
+    @Description {value:"Completely describes the individual metadata at all levels for the specified object.
+                        Can be used to retrieve the fields, URLs, and child relationships"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Return {value:"response message"}
     @Return {value:"Error occured."}
@@ -123,6 +125,22 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         SalesforceConnectorError connectorError;
 
         string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{DESCRIBE}}`;
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        return response.getJsonPayload(), connectorError;
+    }
+
+    @Description { value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
+    @Return { value:"response message"}
+    @Return { value:"Error occured" }
+    action sObjectPlatformAction () (json, SalesforceConnectorError ) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{PLATFORM_ACTION_SUFFIX}}`;
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
@@ -153,7 +171,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured."}
-    action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
+    action createRecord (string sObjectName, json record) (json , SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -164,8 +182,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         response, err = oauth2Connector.post(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
-        json jsonRespone = response.getJsonPayload();
-        return jsonRespone.id.toString(), connectorError;
+        return response.getJsonPayload(), connectorError;
     }
 
     @Description {value:"Updates existing records"}
@@ -213,6 +230,24 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return isDeleted, connectorError;
     }
 
+    @Description { value:"Create multiple records"}
+    @Param { value:"sObjectName: The relevant sobject name"}
+    @Param { value:"payload: json payload containing record data"}
+    @Return { value:"response message"}
+    @Return { value:"Error occured during oauth2 client invocation." }
+    action createMultipleRecords (string sObjectName, json payload) (json, SalesforceConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{MULTIPLE_RECORDS_SUFFIX}}/{{sObjectName}}`;
+        request.setJsonPayload(payload);
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        return response.getJsonPayload(), connectorError;
+    }
 
     // ============================ Create, update, delete records by External IDs ===================== //
 
@@ -300,6 +335,8 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
         return response.getJsonPayload(), connectorError;
     }
+
+    // ================================= Query ================================ //
 
     @Description { value:"Executes the specified SOQL query"}
     @Param { value:"query: The request SOQL query"}
@@ -397,7 +434,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
-    @Description { value:"Get feedback on how Salesforce will execute the query, report, or list view"}
+    @Description { value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
     @Param { value:"queryReportOrListview: The parameter to get feedback on"}
     @Return { value:"response message"}
     @Return { value:"Error occured" }

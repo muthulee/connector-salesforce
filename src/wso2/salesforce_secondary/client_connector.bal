@@ -12,7 +12,7 @@ import src.wso2.salesforce_primary as sfp;
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
 @Param {value:"apiVersion: API version available"}
 public connector ClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                   string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
+                                  string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
 
     endpoint<sfp:CoreClientConnector> coreClientConnector {
         create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
@@ -41,11 +41,11 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Return {value:"Error occured during oauth2 client invocation."}
     action createAccount (json accountRecord) (string, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
-        string accountId;
+        json response;
 
-        accountId, sfConnectorError = coreClientConnector.createRecord(sfp:ACCOUNT, accountRecord);
+        response, sfConnectorError = coreClientConnector.createRecord(sfp:ACCOUNT, accountRecord);
 
-        return accountId, sfConnectorError;
+        return response.id.toString(), sfConnectorError;
     }
 
     @Description {value:"Updates existing Account object record"}
@@ -66,13 +66,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"accountId: The id of the relevant Account record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteAccount (string accountId) (json, sfp:SalesforceConnectorError) {
-        json response;
+    action deleteAccount (string accountId) (boolean, sfp:SalesforceConnectorError) {
+        boolean isDeleted;
         sfp:SalesforceConnectorError sfConnectorError;
 
-        response, sfConnectorError = coreClientConnector.deleteRecord(sfp:ACCOUNT, accountId);
+        isDeleted, sfConnectorError = coreClientConnector.deleteRecord(sfp:ACCOUNT, accountId);
 
-        return response, sfConnectorError;
+        return isDeleted, sfConnectorError;
     }
 
     // ============================ LEAD SObject: get, create, update, delete ===================== //
@@ -94,13 +94,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"leadRecord: json payload containing Lead record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action createLead (json leadRecord) (json, sfp:SalesforceConnectorError) {
+    action createLead (json leadRecord) (string, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
-        string leadId;
+        json response;
 
-        leadId, sfConnectorError = coreClientConnector.createRecord(sfp:LEAD, leadRecord);
+        response, sfConnectorError = coreClientConnector.createRecord(sfp:LEAD, leadRecord);
 
-        return leadId, sfConnectorError;
+        return response.id.toString(), sfConnectorError;
     }
 
     @Description {value:"Updates existing Lead object record"}
@@ -108,7 +108,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"leadRecord: json payload containing Lead record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action updateLead (string leadId, json leadRecord) (json, sfp:SalesforceConnectorError) {
+    action updateLead (string leadId, json leadRecord) (boolean, sfp:SalesforceConnectorError) {
         boolean isUpdated;
         sfp:SalesforceConnectorError sfConnectorError;
 
@@ -121,13 +121,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"leadId: The id of the relevant Lead record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteLead (string leadId) (json, sfp:SalesforceConnectorError) {
-        json response;
+    action deleteLead (string leadId) (boolean, sfp:SalesforceConnectorError) {
+        boolean isDeleted;
         sfp:SalesforceConnectorError sfConnectorError;
 
-        response, sfConnectorError = coreClientConnector.deleteRecord(sfp:LEAD, leadId);
+        isDeleted, sfConnectorError = coreClientConnector.deleteRecord(sfp:LEAD, leadId);
 
-        return response, sfConnectorError;
+        return isDeleted, sfConnectorError;
     }
 
     // ============================ CONTACTS SObject: get, create, update, delete ===================== //
@@ -149,13 +149,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"contactRecord: json payload containing Contact record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action createContact (json contactRecord) (json, sfp:SalesforceConnectorError) {
+    action createContact (json contactRecord) (string, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
-        string contactId;
+        json response;
 
-        contactId, sfConnectorError = coreClientConnector.createRecord(sfp:CONTACT, contactRecord);
+        response, sfConnectorError = coreClientConnector.createRecord(sfp:CONTACT, contactRecord);
 
-        return contactId, sfConnectorError;
+        return response.id.toString(), sfConnectorError;
     }
 
     @Description {value:"Updates existing Contact object record"}
@@ -163,7 +163,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"contactRecord: json payload containing contact record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action updateContact (string contactId, json contactRecord) (json, sfp:SalesforceConnectorError) {
+    action updateContact (string contactId, json contactRecord) (boolean, sfp:SalesforceConnectorError) {
         boolean isUpdated;
         sfp:SalesforceConnectorError sfConnectorError;
 
@@ -176,13 +176,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"contactId: The id of the relevant Contact record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteContact (string contactId) (json, sfp:SalesforceConnectorError) {
-        json response;
+    action deleteContact (string contactId) (boolean , sfp:SalesforceConnectorError) {
+        boolean isDeleted;
         sfp:SalesforceConnectorError sfConnectorError;
 
-        response, sfConnectorError = coreClientConnector.deleteRecord(sfp:CONTACT, contactId);
+        isDeleted, sfConnectorError = coreClientConnector.deleteRecord(sfp:CONTACT, contactId);
 
-        return response, sfConnectorError;
+        return isDeleted, sfConnectorError;
     }
 
     // ============================ OPPORTUNITIES SObject: get, create, update, delete ===================== //
@@ -206,11 +206,11 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Return {value:"Error occured during oauth2 client invocation."}
     action createOpportunity (json opportunityRecord) (json, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
-        string opportunityId;
+        json response;
 
-        opportunityId, sfConnectorError = coreClientConnector.createRecord(sfp:OPPORTUNITY, opportunityRecord);
+        response, sfConnectorError = coreClientConnector.createRecord(sfp:OPPORTUNITY, opportunityRecord);
 
-        return opportunityId, sfConnectorError;
+        return response, sfConnectorError;
     }
 
     @Description {value:"Updates existing Opportunity object record"}
@@ -218,7 +218,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"opportunityRecord: json payload containing Opportunity record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action updateOpportunity (string opportunityId, json opportunityRecord) (json, sfp:SalesforceConnectorError) {
+    action updateOpportunity (string opportunityId, json opportunityRecord) (boolean, sfp:SalesforceConnectorError) {
         boolean isUpdated;
         sfp:SalesforceConnectorError sfConnectorError;
 
@@ -231,13 +231,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"opportunityId: The id of the relevant Opportunity record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteOpportunity (string opportunityId) (json, sfp:SalesforceConnectorError) {
-        json response;
+    action deleteOpportunity (string opportunityId) (boolean, sfp:SalesforceConnectorError) {
+        boolean isDeleted;
         sfp:SalesforceConnectorError sfConnectorError;
 
-        response, sfConnectorError = coreClientConnector.deleteRecord(sfp:OPPORTUNITY, opportunityId);
+        isDeleted, sfConnectorError = coreClientConnector.deleteRecord(sfp:OPPORTUNITY, opportunityId);
 
-        return response, sfConnectorError;
+        return isDeleted, sfConnectorError;
     }
 
     // ============================ PRODUCTS SObject: get, create, update, delete ===================== //
@@ -259,13 +259,13 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"productRecord: json payload containing Product record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action createProduct (json productRecord) (json, sfp:SalesforceConnectorError) {
+    action createProduct (json productRecord) (string, sfp:SalesforceConnectorError) {
         sfp:SalesforceConnectorError sfConnectorError;
-        string productId;
+        json response;
 
-        productId, sfConnectorError = coreClientConnector.createRecord(sfp:PRODUCT, productRecord);
+        response, sfConnectorError = coreClientConnector.createRecord(sfp:PRODUCT, productRecord);
 
-        return productId, sfConnectorError;
+        return response.id.toString(), sfConnectorError;
     }
 
     @Description {value:"Updates existing Product object record"}
@@ -273,7 +273,7 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"productRecord: json payload containing product record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action updateProduct (string productId, json productRecord) (json, sfp:SalesforceConnectorError) {
+    action updateProduct (string productId, json productRecord) (boolean, sfp:SalesforceConnectorError) {
         boolean isUpdated;
         sfp:SalesforceConnectorError sfConnectorError;
 
@@ -286,12 +286,12 @@ public connector ClientConnector (string baseUrl, string accessToken, string cli
     @Param {value:"productId: The id of the relevant Product record supposed to be deleted"}
     @Return {value:"response message"}
     @Return {value:"Error occured during oauth2 client invocation."}
-    action deleteProduct (string productId) (json, sfp:SalesforceConnectorError) {
-        json response;
+    action deleteProduct (string productId) (boolean, sfp:SalesforceConnectorError) {
+        boolean isDeleted;
         sfp:SalesforceConnectorError sfConnectorError;
 
-        response, sfConnectorError = coreClientConnector.deleteRecord(sfp:PRODUCT, productId);
+        isDeleted, sfConnectorError = coreClientConnector.deleteRecord(sfp:PRODUCT, productId);
 
-        return response, sfConnectorError;
+        return isDeleted, sfConnectorError;
     }
 }
