@@ -1,15 +1,27 @@
+//
+// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+
 package samples.wso2.salesforce;
 
 import ballerina.io;
-import ballerina.net.http;
 import ballerina.time;
 import src.wso2.salesforce_primary as sfp;
 import src.wso2.salesforce_secondary as sfs;
-
-http:HttpConnectorError e;
-http:InResponse response = {};
-error err = {};
-
 
 string baseUrl = "https://wso2--wsbox.cs8.my.salesforce.com";
 string accessToken = "00DL0000002ASPS!ASAAQHyEs5qD9BzTEevUWAIUOjGh0e9zyVIojgS1dLwNXhlMBXGre8IwNoruuV6joCjAR0qG1B8KhNOxYSczwOuRmCEQU6LG";
@@ -24,7 +36,6 @@ string sampleSObjectLead = "Lead";
 string sampleSObjectProduct = "Product";
 string sampleSObjectContact = "Contact";
 string sampleSObjectOpportunity = "Opportunity";
-string namedLayoutInfo = "";
 
 public function main (string[] args) {
 
@@ -43,7 +54,8 @@ public function main (string[] args) {
     string endDateTime = now.format("yyyy-MM-dd'T'HH:mm:ssZ");
     time:Time weekAgo = now.subtractDuration(0, 0, 7, 0, 0, 0, 0);
     string startDateTime = weekAgo.format("yyyy-MM-dd'T'HH:mm:ssZ");
-    //time:Time monthAfter = now.addDuration(0, 1, 0, 0, 0, 0, 0);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     io:println("------------------------MAIN METHOD: API Versions----------------------");
     json[] apiVersions;
@@ -78,8 +90,7 @@ public function main (string[] args) {
     io:println(string `Describe {{sampleSObjectAccount}} has {{lengthof jsonResponse.fields}} fields and {{lengthof jsonResponse.childRelationships}} child relationships`);
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     io:println("\n------------------------MAIN METHOD: Handling Records---------------------------");
     json account = {Name:"ABC Inc", BillingCity:"New York", Global_POD__c:"UK"};
@@ -263,8 +274,8 @@ public function main (string[] args) {
         io:println(string `Error occurred when deleting {{sampleSObjectContact}}[{{contactId}}]: {{err.messages[0]}}`);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    //// ============================ Opportunities SObject: get, create, update, delete ===================== //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// ========================= Opportunities SObject: get, create, update, delete =================== //
 
     //io:println("\n------------------------OPPORTUNITIES SObjecct Information-----------------------");
     //json responseOpportunity;

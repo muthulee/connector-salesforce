@@ -1,3 +1,21 @@
+//
+// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+
 package src.wso2.salesforce_primary;
 
 import ballerina.net.http;
@@ -5,7 +23,7 @@ import ballerina.net.uri;
 import test.wso2.salesforce as oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
-@Description {value:"Salesforcerest client connector"}
+@Description {value:"Salesforce core client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
 @Param {value:"accessToken: The access token of the account"}
 @Param {value:"clientId: The client Id of the account"}
@@ -131,10 +149,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description { value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
-    @Return { value:"response message"}
-    @Return { value:"Error occured" }
-    action sObjectPlatformAction () (json, SalesforceConnectorError ) {
+    @Description {value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action sObjectPlatformAction () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -166,12 +184,51 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
+    @Description {value:"Retrieve field values from a record for a specified SObject"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"rowId: The row ID of the required record"}
+    @Param {value:"fields: The comma separated set of required fields"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getFieldValuesBySObjectRecord (string sobjectName, string rowId, string fields) (json, SalesforceConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sobjectName}}/{{rowId}}/{{FIELDS_SUFFIX}}/{{fields}}`;
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        return response.getJsonPayload(), connectorError;
+    }
+
+    @Description {value:"Retrieve field values from an external record"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"rowId: The row ID of the required record"}
+    @Param {value:"fields: The comma separated set of required fields"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getFieldValuesByExternalObjectRecord (string externalObjectName, string rowId, string fields)
+    (json, SalesforceConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{externalObjectName}}/{{rowId}}/{{FIELDS_SUFFIX}}/{{fields}}`;
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        return response.getJsonPayload(), connectorError;
+    }
+
     @Description {value:"Creates new records"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured."}
-    action createRecord (string sObjectName, json record) (json , SalesforceConnectorError) {
+    action createRecord (string sObjectName, json record) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -230,11 +287,11 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return isDeleted, connectorError;
     }
 
-    @Description { value:"Create multiple records"}
-    @Param { value:"sObjectName: The relevant sobject name"}
-    @Param { value:"payload: json payload containing record data"}
-    @Return { value:"response message"}
-    @Return { value:"Error occured during oauth2 client invocation." }
+    @Description {value:"Create multiple records"}
+    @Param {value:"sObjectName: The relevant sobject name"}
+    @Param {value:"payload: json payload containing record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
     action createMultipleRecords (string sObjectName, json payload) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -338,10 +395,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     // ================================= Query ================================ //
 
-    @Description { value:"Executes the specified SOQL query"}
-    @Param { value:"query: The request SOQL query"}
-    @Return { value:"returns QueryResult struct"}
-    @Return { value:"Error occured" }
+    @Description {value:"Executes the specified SOQL query"}
+    @Param {value:"query: The request SOQL query"}
+    @Return {value:"returns QueryResult struct"}
+    @Return {value:"Error occured"}
     action query (string query) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -369,10 +426,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
-    @Description { value:"If the queryAll results are too large, retrieve the next batch of results using nextRecordUrl"}
-    @Param { value:"nextRecordsUrl: The url sent with first batch of queryAll results to get the next batch"}
-    @Return { value:"returns QueryResult struct"}
-    @Return { value:"Error occured" }
+    @Description {value:"If the queryAll results are too large, retrieve the next batch of results using nextRecordUrl"}
+    @Param {value:"nextRecordsUrl: The url sent with first batch of queryAll results to get the next batch"}
+    @Return {value:"returns QueryResult struct"}
+    @Return {value:"Error occured"}
     action nextQueryResult (string nextRecordsUrl) (QueryResult, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -434,10 +491,10 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return result, connectorError;
     }
 
-    @Description { value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
-    @Param { value:"queryReportOrListview: The parameter to get feedback on"}
-    @Return { value:"response message"}
-    @Return { value:"Error occured" }
+    @Description {value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
+    @Param {value:"queryReportOrListview: The parameter to get feedback on"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
     action explainQueryReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -465,28 +522,4 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
         return queryPlans, connectorError;
     }
-}
-
-// ============================ function to check and set errors ===================== //
-
-@Description {value:"Function to check errors and set errors to relevant error types"}
-@Param {value:"response: http response"}
-@Param {value:"httpError: http connector error"}
-@Return {value:"Error occured"}
-function checkAndSetErrors (http:InResponse response, http:HttpConnectorError httpError) (SalesforceConnectorError) {
-    SalesforceConnectorError connectorError;
-    if (httpError != null) {
-        connectorError = {messages:[httpError.message], connectionError:httpError};
-    } else if (response.statusCode != 200 && response.statusCode != 201 && response.statusCode != 204) {
-        json[] body;
-        error _;
-        body, _ = (json[])response.getJsonPayload();
-        connectorError = {messages:[], salesforceErrors:[]};
-        foreach i, e in body {
-            SalesforceError sfError = {message:e.message.toString(), errorCode:e.errorCode.toString()};
-            connectorError.messages[i] = e.message.toString();
-            connectorError.salesforceErrors[i] = sfError;
-        }
-    }
-    return connectorError;
 }
