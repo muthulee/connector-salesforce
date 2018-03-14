@@ -18,12 +18,16 @@
 
 package src.salesforce_primary;
 
+//Latest API Version
+public const string API_VERSION = "v37.0";
+
 //Salesforce endpoints
 public const string BASE_URI = "/services/data";
 public const string SOBJECTS = "sobjects";
 public const string LIMITS_SUFFIX = "limits";
 public const string DESCRIBE = "describe";
 public const string QUERY = "query";
+public const string SEARCH = "search";
 public const string QUERYALL = "queryAll";
 public const string PLATFORM_ACTION_SUFFIX = "PlatformAction";
 public const string MULTIPLE_RECORDS_SUFFIX = "composite/tree";

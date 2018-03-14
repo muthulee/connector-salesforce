@@ -25,26 +25,26 @@ import test.salesforce as oauth2;
 
 @Description {value:"Salesforce core client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
-@Param {value:"accessToken: The access token of the account"}
-@Param {value:"clientId: The client Id of the account"}
-@Param {value:"clientSecret: The client secret of the account"}
-@Param {value:"refreshToken: The refresh token of the account"}
+@Param {value:"accessToken: The access token of the salesforce account"}
+@Param {value:"clientId: The client Id of the salesforce account"}
+@Param {value:"clientSecret: The client secret of the salesforce account"}
+@Param {value:"refreshToken: The refresh token of the salesforce account"}
 @Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
-@Param {value:"apiVersion: API version available"}
 public connector CoreClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                      string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
+                                      string refreshTokenEndpoint, string refreshTokenPath) {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
         create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
     }
 
     error _;
+    string apiVersion = API_VERSION;
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
     @Return {value:"Error occured"}
-    action listAvailableApiVersions () (json[], SalesforceConnectorError) {
+    action getAvailableApiVersions () (json[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -67,7 +67,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Lists the resources available for the specified API version"}
     @Return {value:"response message"}
     @Return {value:"Error occurred"}
-    action listResourcesByApiVersion () (json, SalesforceConnectorError) {
+    action getResourcesByApiVersion () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -83,7 +83,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Lists limits information for your organization"}
     @Return {value:"response message"}
     @Return {value:"Error occured "}
-    action listOrganizationLimits () (json, SalesforceConnectorError) {
+    action getOrganizationLimits () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -101,7 +101,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
     @Return {value:"Array of available objects"}
     @Return {value:"Error occured "}
-    action describeGlobal () (json, SalesforceConnectorError) {
+    action describeAvailableObjects () (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -184,13 +184,13 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description {value:"Retrieve field values from a record for a specified SObject"}
+    @Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"rowId: The row ID of the required record"}
     @Param {value:"fields: The comma separated set of required fields"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action getFieldValuesBySObjectRecord (string sobjectName, string rowId, string fields) (json, SalesforceConnectorError) {
+    action getFieldValuesFromSObjectRecord (string sobjectName, string rowId, string fields) (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -203,13 +203,13 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return response.getJsonPayload(), connectorError;
     }
 
-    @Description {value:"Retrieve field values from an external record"}
+    @Description {value:"Retrieve field values from an external object record using Salesforce ID or External ID"}
     @Param {value:"sobjectName: The relevant sobject name"}
     @Param {value:"rowId: The row ID of the required record"}
     @Param {value:"fields: The comma separated set of required fields"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action getFieldValuesByExternalObjectRecord (string externalObjectName, string rowId, string fields)
+    action getFieldValuesFromExternalObjectRecord (string externalObjectName, string rowId, string fields)
     (json, SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
@@ -287,7 +287,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         return isDeleted, connectorError;
     }
 
-    @Description {value:"Create multiple records"}
+    @Description {value:"Allows to create multiple records"}
     @Param {value:"sObjectName: The relevant sobject name"}
     @Param {value:"payload: json payload containing record data"}
     @Return {value:"response message"}
@@ -495,7 +495,7 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
     @Param {value:"queryReportOrListview: The parameter to get feedback on"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action explainQueryReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
+    action explainQueryOrReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -521,5 +521,26 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         }
 
         return queryPlans, connectorError;
+    }
+
+    // ================================= Search ================================ //
+
+    @Description {value:"Executes the specified SOSL search"}
+    @Param {value:"searchString: The request SOSL string"}
+    @Return {value:"returns results"}
+    @Return {value:"Error occured"}
+    action search (string searchString) (json, SalesforceConnectorError) {
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+
+        searchString = searchString.replaceAll("\\s+", "+");
+
+        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SEARCH}}/?q={{searchString}}`;
+        response, err = oauth2Connector.get(requestURI, request);
+        connectorError = checkAndSetErrors(response, err);
+
+        return response.getJsonPayload(), connectorError;
     }
 }

@@ -4,9 +4,11 @@ The Salesforce connector which is implemented in ballerina allows you to access 
 
 ### Compatibility
 
-| Language Version | Connector Version | API Version |
-|     0.964.0      |        0.1        |             |
-|                  |                   |             |
+ Language Version : 0.964.0
+ 
+ Connector Version : 0.9
+  
+ API Version       : v37.0
 
 ### Getting started
 

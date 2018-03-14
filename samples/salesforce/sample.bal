@@ -30,21 +30,21 @@ string clientSecret = "1164810542004702763";
 string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxzBz58_XPXLUMpHViE8EqTjdV7pvnI1xq8pMfOA";
 string refreshTokenEndpoint = "https://test.salesforce.com";
 string refreshTokenPath = "/services/oauth2/token";
-string apiVersion = "v37.0";
 string sampleSObjectAccount = "Account";
 string sampleSObjectLead = "Lead";
 string sampleSObjectProduct = "Product";
 string sampleSObjectContact = "Contact";
 string sampleSObjectOpportunity = "Opportunity";
+string apiVersion = "v37.0";
 
 public function main (string[] args) {
 
     endpoint<sfp:CoreClientConnector> salesforceCoreConnector {
-        create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
+        create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
     }
 
     endpoint<sfs:ClientConnector> salesforceConnector {
-        create sfs:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
+        create sfs:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
     }
 
     sfp:SalesforceConnectorError err;
@@ -59,16 +59,16 @@ public function main (string[] args) {
 
     io:println("------------------------MAIN METHOD: API Versions----------------------");
     json[] apiVersions;
-    apiVersions, err = salesforceCoreConnector.listAvailableApiVersions();
+    apiVersions, err = salesforceCoreConnector.getAvailableApiVersions();
     checkErrors(err);
     io:println("Found " + lengthof apiVersions + " API versions");
 
-    jsonResponse, err = salesforceCoreConnector.listResourcesByApiVersion();
+    jsonResponse, err = salesforceCoreConnector.getResourcesByApiVersion();
     checkErrors(err);
     io:println(string `Number of resources by API Version {{apiVersion}}: {{lengthof jsonResponse.getKeys()}}`);
 
     io:println("\n------------------------MAIN METHOD: Organizational Limits-------------------------");
-    jsonResponse, err = salesforceCoreConnector.listOrganizationLimits();
+    jsonResponse, err = salesforceCoreConnector.getOrganizationLimits();
     checkErrors(err);
     io:println(string `There are resource limits for {{lengthof jsonResponse.getKeys()}} resources`);
 
@@ -77,7 +77,7 @@ public function main (string[] args) {
     // ============================ Describe SObjects available and their fields/metadata ===================== //
 
     io:println("\n-----------------------MAIN METHOD: Describe global and sobject metadata---------------------------");
-    jsonResponse, err = salesforceCoreConnector.describeGlobal();
+    jsonResponse, err = salesforceCoreConnector.describeAvailableObjects();
     checkErrors(err);
     io:println(string `Global has {{lengthof jsonResponse.sobjects}} sobjects`);
 
@@ -89,6 +89,11 @@ public function main (string[] args) {
     checkErrors(err);
     io:println(string `Describe {{sampleSObjectAccount}} has {{lengthof jsonResponse.fields}} fields and {{lengthof jsonResponse.childRelationships}} child relationships`);
 
+    //jsonResponse, err = salesforceCoreConnector.sObjectPlatformAction();
+    //checkErrors(err);
+    //io:println(string `SObject Platform Action response is:`);
+    //io:println(jsonResponse.toString());
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,8 +101,9 @@ public function main (string[] args) {
     json account = {Name:"ABC Inc", BillingCity:"New York", Global_POD__c:"UK"};
     json lead = {LastName:"Carmen", Company:"WSO2", City:"New York"};
     json contact = {LastName:"Patson"};
-    json opportunity = {Name:"IoT", StageName:"30 - Proposal/Price Quote", CloseDate:"2011-07-14T19:43:37+0100", Description:"Opportunity for IoT and Cloud"};
+    json opportunity = {Name:"IoT", StageName:"30 - Proposal/Price Quote", CloseDate:"2019-07-14T19:43:37+0100", Description:"Opportunity for IoT and Cloud"};
     json product = {Name:"APIM", Description:"APIM product"};
+    string searchString = "FIND {John Keells Holdings PLC}";
     string accountId;
     string leadId;
     string contactId;
@@ -164,6 +170,10 @@ public function main (string[] args) {
     checkErrors(err);
     io:println(string `Found {{lengthof jsonResponse.ids}} ids of updated records`);
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // ============================ Executing Queries and Searches ============================= //
+
     io:println("\n------------------------MAIN METHOD: Executing queries----------------");
     sfp:QueryResult queryResult;
 
@@ -178,10 +188,15 @@ public function main (string[] args) {
 
     sfp:QueryPlan[] queryPlans;
 
-    queryPlans, err = salesforceCoreConnector.explainQueryReportOrListview("SELECT name FROM Account");
+    queryPlans, err = salesforceCoreConnector.explainQueryOrReportOrListview("SELECT name FROM Account");
     checkErrors(err);
     io:println(string `Found {{lengthof queryPlans}} query plans`);
     io:println(queryPlans);
+
+    jsonResponse, err = salesforceCoreConnector.search(searchString);
+    checkErrors(err);
+    io:println(string `Found results for {{searchString}} SOSL search:`);
+    io:println(jsonResponse.toString());
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

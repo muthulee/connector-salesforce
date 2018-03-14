@@ -22,18 +22,17 @@ import src.salesforce_primary as sfp;
 
 @Description {value:"Salesforcerest client connector"}
 @Param {value:"baseUrl: The endpoint base url"}
-@Param {value:"accessToken: The access token of the account"}
-@Param {value:"clientId: The client Id of the account"}
-@Param {value:"clientSecret: The client secret of the account"}
-@Param {value:"refreshToken: The refresh token of the account"}
+@Param {value:"accessToken: The access token of the salesforce account"}
+@Param {value:"clientId: The client Id of the salesforce account"}
+@Param {value:"clientSecret: The client secret of the salesforce account"}
+@Param {value:"refreshToken: The refresh token of the salesforce account"}
 @Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
-@Param {value:"apiVersion: API version available"}
 public connector ClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                  string refreshTokenEndpoint, string refreshTokenPath, string apiVersion) {
+                                  string refreshTokenEndpoint, string refreshTokenPath) {
 
     endpoint<sfp:CoreClientConnector> coreClientConnector {
-        create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath, apiVersion);
+        create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
     }
 
     error _;
