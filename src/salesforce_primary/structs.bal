@@ -44,6 +44,11 @@ public struct QueryResult {
     string nextRecordsUrl;
 }
 
+public struct SearchResult {
+    json attributes;
+    string Id;
+}
+
 public struct QueryPlan {
     int cardinality;
     string[] fields;

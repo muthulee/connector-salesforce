@@ -527,9 +527,9 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
 
     @Description {value:"Executes the specified SOSL search"}
     @Param {value:"searchString: The request SOSL string"}
-    @Return {value:"returns results"}
+    @Return {value:"returns results in SearchResult struct"}
     @Return {value:"Error occured"}
-    action search (string searchString) (json, SalesforceConnectorError) {
+    action searchSOSLString (string searchString) (SearchResult[], SalesforceConnectorError) {
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -541,6 +541,18 @@ public connector CoreClientConnector (string baseUrl, string accessToken, string
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
-        return response.getJsonPayload(), connectorError;
+        SearchResult[] searchResults = [];
+        if (connectorError != null) {
+            return searchResults, connectorError;
+        }
+
+        json jsonResponse = response.getJsonPayload().searchRecords;
+        json[] jsonSearchResults;
+        jsonSearchResults, _ = (json[])jsonResponse;
+
+        foreach i, result in jsonSearchResults {
+            searchResults[i], _ = <SearchResult>result;
+        }
+        return searchResults, connectorError;
     }
 }

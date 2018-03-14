@@ -193,10 +193,10 @@ public function main (string[] args) {
     io:println(string `Found {{lengthof queryPlans}} query plans`);
     io:println(queryPlans);
 
-    jsonResponse, err = salesforceCoreConnector.search(searchString);
+    sfp:SearchResult[] searchResults;
+    searchResults, err = salesforceCoreConnector.searchSOSLString(searchString);
     checkErrors(err);
-    io:println(string `Found results for {{searchString}} SOSL search:`);
-    io:println(jsonResponse.toString());
+    io:println(string `Found {{lengthof searchResults}} results for {{searchString}} SOSL search:`);
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
