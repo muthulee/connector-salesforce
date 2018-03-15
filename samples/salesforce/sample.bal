@@ -56,7 +56,7 @@ public function main (string[] args) {
     checkErrors(err);
     io:println("Found " + lengthof apiVersions + " API versions");
 
-    jsonResponse, err = salesforceCoreConnector.getResourcesByApiVersion();
+    jsonResponse, err = salesforceCoreConnector.getResourcesByApiVersion(sfp:API_VERSION);
     checkErrors(err);
     io:println(string `Number of resources by API Version {{apiVersion}}: {{lengthof jsonResponse.getKeys()}}`);
 

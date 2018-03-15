@@ -20,7 +20,9 @@ package src.salesforce_primary;
 
 import ballerina.config;
 import ballerina.io;
+import ballerina.log;
 import ballerina.net.http;
+import ballerina.net.uri;
 import oauth2;
 
 oauth2:ClientConnector oauth2Connector = null;
@@ -39,6 +41,69 @@ function getOAuth2ClientConnector () (oauth2:ClientConnector) {
     }
 
     return oauth2Connector;
+}
+
+
+function sendGetRequest (string url) (json, SalesforceConnectorError) {
+    endpoint<oauth2:ClientConnector> oauth2Connector {
+        getOAuth2ClientConnector();
+    }
+
+    http:OutRequest request = {};
+    http:InResponse response = {};
+    http:HttpConnectorError err;
+    SalesforceConnectorError connectorError;
+
+    response, err = oauth2Connector.get(url, request);
+    connectorError = checkAndSetErrors(response, err);
+    json payload = response.getJsonPayload();
+
+    if (payload == null) {
+        log:printWarn("null payload received for: " + url);
+    }
+
+    // TODO check if payload is null or had any error
+    return payload, connectorError;
+}
+
+
+function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) (string) {
+    string url = "";
+    error e;
+
+    if (paths != null) {
+        foreach path in paths {
+            if (!path.hasPrefix("/")) {
+                url = url + "/";
+            }
+
+            url = url + path;
+        }
+    }
+
+    if (queryParamNames != null) {
+        url = url + "?";
+        boolean first = true;
+        foreach i, name in queryParamNames {
+            string value = queryParamValues[i];
+
+            value, e = uri:encode(value, ENCODING_CHARSET);
+            if (e != null) {
+                log:printErrorCause("Unable to encode value: " + value, e);
+                break;
+            }
+
+            if (first) {
+                url = url + name + "=" + value;
+                first = false;
+            } else {
+                url = url + "&" + name + "=" + value;
+            }
+        }
+    }
+
+    log:printDebug("Prepared URL: " + url);
+    return url;
 }
 
 @Description {value:"Function to check errors and set errors to relevant error types"}

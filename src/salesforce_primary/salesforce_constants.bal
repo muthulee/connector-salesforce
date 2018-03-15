@@ -30,17 +30,29 @@ public const string REFRESH_TOKEN_PATH = "REFRESH_TOKEN_PATH";
 //Latest API Version
 public const string API_VERSION = "v37.0";
 
+// For URL encoding
+public const string ENCODING_CHARSET = "utf-8";
+
 //Salesforce endpoints
-public const string BASE_URI = "/services/data";
+public const string BASE_PATH = "/services/data";
+public const string API_BASE_PATH = string `{{BASE_PATH}}/{{API_VERSION}}`;
 public const string SOBJECTS = "sobjects";
-public const string LIMITS_SUFFIX = "limits";
+public const string LIMITS = "limits";
+public const string DELETED = "deleted";
+public const string UPDATED = "updated";
 public const string DESCRIBE = "describe";
 public const string QUERY = "query";
 public const string SEARCH = "search";
 public const string QUERYALL = "queryAll";
-public const string PLATFORM_ACTION_SUFFIX = "PlatformAction";
-public const string MULTIPLE_RECORDS_SUFFIX = "composite/tree";
-public const string FIELDS_SUFFIX = "?fields=";
+public const string PLATFORM_ACTION = "PlatformAction";
+public const string MULTIPLE_RECORDS = "composite/tree";
+
+// Query param names
+public const string FIELDS = "fields";
+public const string START = "start";
+public const string END = "end";
+public const string Q = "q";
+public const string EXPLAIN = "explain";
 
 //=================================  SObjects  ==========================================//
 public const string ACCOUNT = "Account";

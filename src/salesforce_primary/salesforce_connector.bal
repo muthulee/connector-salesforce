@@ -18,9 +18,7 @@
 
 package src.salesforce_primary;
 
-import ballerina.config;
 import ballerina.net.http;
-import ballerina.net.uri;
 import oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
@@ -39,27 +37,23 @@ public connector SalesforceConnector () {
     }
 
     error _;
-    string apiVersion = API_VERSION;
+    string baseURL = string `{{BASE_PATH}}/{{API_VERSION}}`;
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
     @Return {value:"Error occured"}
     action getAvailableApiVersions () (json[], SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-
-        json[] apiVersions;
         SalesforceConnectorError connectorError;
+        json response;
+        json[] apiVersions;
 
-        response, err = oauth2Connector.get(BASE_URI, request);
-        connectorError = checkAndSetErrors(response, err);
+        response, connectorError = sendGetRequest(prepareUrl([BASE_PATH], null, null));
 
         if (connectorError != null) {
             return apiVersions, connectorError;
         }
 
-        apiVersions, _ = (json[])response.getJsonPayload();
+        apiVersions, _ = (json[])response;
 
         return apiVersions, connectorError;
     }
@@ -67,33 +61,27 @@ public connector SalesforceConnector () {
     @Description {value:"Lists the resources available for the specified API version"}
     @Return {value:"response message"}
     @Return {value:"Error occurred"}
-    action getResourcesByApiVersion () (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
+    action getResourcesByApiVersion (string apiVersion) (json, SalesforceConnectorError) {
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([BASE_PATH, apiVersion], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Lists limits information for your organization"}
     @Return {value:"response message"}
     @Return {value:"Error occured "}
     action getOrganizationLimits () (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{LIMITS_SUFFIX}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, LIMITS], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     // ============================ Describe SObjects available and their fields/metadata ===================== //
@@ -102,16 +90,13 @@ public connector SalesforceConnector () {
     @Return {value:"Array of available objects"}
     @Return {value:"Error occured "}
     action describeAvailableObjects () (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Describes the individual metadata for the specified object"}
@@ -119,16 +104,13 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured "}
     action getSObjectBasicInfo (string sobjectName) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sobjectName}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sobjectName], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Completely describes the individual metadata at all levels for the specified object.
@@ -137,32 +119,26 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action describeSObject (string sObjectName) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{DESCRIBE}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DESCRIBE], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
     action sObjectPlatformAction () (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{PLATFORM_ACTION_SUFFIX}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, PLATFORM_ACTION], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     // ============================ Get, create, update, delete records ===================== //
@@ -172,16 +148,13 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action getRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
@@ -190,17 +163,14 @@ public connector SalesforceConnector () {
     @Param {value:"fields: The comma separated set of required fields"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action getFieldValuesFromSObjectRecord (string sobjectName, string rowId, string fields) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
+    action getFieldValuesFromSObjectRecord (string sObjectName, string id, string fields) (json, SalesforceConnectorError) {
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sobjectName}}/{{rowId}}/{{FIELDS_SUFFIX}}/{{fields}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], [FIELDS], [fields]);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Retrieve field values from an external object record using Salesforce ID or External ID"}
@@ -209,18 +179,14 @@ public connector SalesforceConnector () {
     @Param {value:"fields: The comma separated set of required fields"}
     @Return {value:"response message"}
     @Return {value:"Error occured"}
-    action getFieldValuesFromExternalObjectRecord (string externalObjectName, string rowId, string fields)
+    action getFieldValuesFromExternalObjectRecord (string externalObjectName, string id, string fields)
     (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{externalObjectName}}/{{rowId}}/{{FIELDS_SUFFIX}}/{{fields}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
-
-        return response.getJsonPayload(), connectorError;
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, externalObjectName, id], [FIELDS], [fields]);
+        response, connectorError = sendGetRequest(path);
+        return response, connectorError;
     }
 
     @Description {value:"Creates new records"}
@@ -234,7 +200,7 @@ public connector SalesforceConnector () {
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}`;
+        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.post(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
@@ -254,7 +220,7 @@ public connector SalesforceConnector () {
         SalesforceConnectorError connectorError;
         boolean isUpdated;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
+        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.patch(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
@@ -277,7 +243,7 @@ public connector SalesforceConnector () {
         SalesforceConnectorError connectorError;
         boolean isDeleted;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
+        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
         response, err = oauth2Connector.delete(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
 
@@ -298,7 +264,7 @@ public connector SalesforceConnector () {
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{MULTIPLE_RECORDS_SUFFIX}}/{{sObjectName}}`;
+        string requestURI = string `{{API_BASE_PATH}}/{{MULTIPLE_RECORDS}}/{{sObjectName}}`;
         request.setJsonPayload(payload);
         response, err = oauth2Connector.get(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
@@ -315,16 +281,13 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured"}
     action getRecordByExternalId (string sObjectName, string fieldName, string fieldValue) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldName}}/{{fieldValue}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, fieldName, fieldValue], null, null);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
@@ -341,7 +304,7 @@ public connector SalesforceConnector () {
         http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
 
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldId}}/{{fieldValue}}`;
+        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldId}}/{{fieldValue}}`;
         request.setJsonPayload(record);
         response, err = oauth2Connector.patch(requestURI, request);
         connectorError = checkAndSetErrors(response, err);
@@ -358,18 +321,13 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action getDeletedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        startTime, _ = uri:encode(startTime, "utf-8");
-        endTime, _ = uri:encode(endTime, "utf-8");
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/deleted/?start={{startTime}}&end={{endTime}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DELETED], [START, END], [startTime, endTime]);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     @Description {value:"Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object"}
@@ -379,18 +337,13 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured"}
     action getUpdatedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        startTime, _ = uri:encode(startTime, "utf-8");
-        endTime, _ = uri:encode(endTime, "utf-8");
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SOBJECTS}}/{{sObjectName}}/updated/?start={{startTime}}&end={{endTime}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, UPDATED], [START, END], [startTime, endTime]);
+        response, connectorError = sendGetRequest(path);
 
-        return response.getJsonPayload(), connectorError;
+        return response, connectorError;
     }
 
     // ================================= Query ================================ //
@@ -400,16 +353,11 @@ public connector SalesforceConnector () {
     @Return {value:"returns QueryResult struct"}
     @Return {value:"Error occured"}
     action query (string query) (QueryResult, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        query = query.replaceAll("\\s+", "+");
-
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?q={{query}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, QUERY], [Q], [query]);
+        response, connectorError = sendGetRequest(path);
 
         QueryResult result = {};
 
@@ -417,12 +365,16 @@ public connector SalesforceConnector () {
             return result, connectorError;
         }
 
-        json jsonResponse = response.getJsonPayload();
-        result.done, _ = (boolean)jsonResponse.done;
-        result.totalSize, _ = (int)jsonResponse.totalSize;
-        result.records, _ = (json[])jsonResponse.records;
-        result.nextRecordsUrl, _ = (string)jsonResponse.nextRecordsUrl;
+        result.done, _ = (boolean)response.done;
+        result.totalSize, _ = (int)response.totalSize;
+        result.records, _ = (json[])response.records;
+        if (response.nextRecordsUrl != null) {
+            result.nextRecordsUrl = response.nextRecordsUrl.toString();
+        } else {
+            result.nextRecordsUrl = null;
+        }
 
+        // todo Use struct bound functions for this
         return result, connectorError;
     }
 
@@ -431,13 +383,10 @@ public connector SalesforceConnector () {
     @Return {value:"returns QueryResult struct"}
     @Return {value:"Error occured"}
     action nextQueryResult (string nextRecordsUrl) (QueryResult, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        response, err = oauth2Connector.get(nextRecordsUrl, request);
-        connectorError = checkAndSetErrors(response, err);
+        response, connectorError = sendGetRequest(nextRecordsUrl);
 
         QueryResult result = {};
 
@@ -445,12 +394,11 @@ public connector SalesforceConnector () {
             return result, connectorError;
         }
 
-        json jsonResponse = response.getJsonPayload();
-        result.done, _ = (boolean)jsonResponse.done;
-        result.totalSize, _ = (int)jsonResponse.totalSize;
-        result.records, _ = (json[])jsonResponse.records;
-        if (jsonResponse.nextRecordsUrl != null) {
-            result.nextRecordsUrl = jsonResponse.nextRecordsUrl.toString();
+        result.done, _ = (boolean)response.done;
+        result.totalSize, _ = (int)response.totalSize;
+        result.records, _ = (json[])response.records;
+        if (response.nextRecordsUrl != null) {
+            result.nextRecordsUrl = response.nextRecordsUrl.toString();
         } else {
             result.nextRecordsUrl = null;
         }
@@ -464,17 +412,12 @@ public connector SalesforceConnector () {
     @Param {value:"queryString: The request SOQL query"}
     @Return {value:"response message"}
     @Return {value:"Error occured."}
-    action getAllQueries (string queryAllString) (QueryResult, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
+    action getAllQueries (string query) (QueryResult, SalesforceConnectorError) {
         SalesforceConnectorError connectorError;
+        json response;
 
-        queryAllString = queryAllString.replaceAll("\\s+", "+");
-
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERYALL}}/?q={{queryAllString}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, QUERYALL], [Q], [query]);
+        response, connectorError = sendGetRequest(path);
 
         QueryResult result = {};
 
@@ -482,11 +425,14 @@ public connector SalesforceConnector () {
             return result, connectorError;
         }
 
-        json jsonResponse = response.getJsonPayload();
-        result.done, _ = (boolean)jsonResponse.done;
-        result.totalSize, _ = (int)jsonResponse.totalSize;
-        result.records, _ = (json[])jsonResponse.records;
-        result.nextRecordsUrl, _ = (string)jsonResponse.nextRecordsUrl;
+        result.done, _ = (boolean)response.done;
+        result.totalSize, _ = (int)response.totalSize;
+        result.records, _ = (json[])response.records;
+        if (response.nextRecordsUrl != null) {
+            result.nextRecordsUrl = response.nextRecordsUrl.toString();
+        } else {
+            result.nextRecordsUrl = null;
+        }
 
         return result, connectorError;
     }
@@ -496,25 +442,19 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured"}
     action explainQueryOrReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        queryReportOrListview = queryReportOrListview.replaceAll("\\s+", "+");
-
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{QUERY}}/?explain={{queryReportOrListview}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, QUERY], [EXPLAIN], [queryReportOrListview]);
+        response, connectorError = sendGetRequest(path);
 
         QueryPlan[] queryPlans = [];
         if (connectorError != null) {
             return queryPlans, connectorError;
         }
 
-        json jsonResponse = response.getJsonPayload();
         json[] plans;
-        plans, _ = (json[])jsonResponse.plans;
+        plans, _ = (json[])response.plans;
 
         foreach i, plan in plans {
             queryPlans[i], _ = <QueryPlan>plan;
@@ -530,23 +470,18 @@ public connector SalesforceConnector () {
     @Return {value:"returns results in SearchResult struct"}
     @Return {value:"Error occured"}
     action searchSOSLString (string searchString) (SearchResult[], SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
         SalesforceConnectorError connectorError;
+        json response;
 
-        searchString = searchString.replaceAll("\\s+", "+");
-
-        string requestURI = string `{{BASE_URI}}/{{apiVersion}}/{{SEARCH}}/?q={{searchString}}`;
-        response, err = oauth2Connector.get(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
+        string path = prepareUrl([API_BASE_PATH, SEARCH], [Q], [searchString]);
+        response, connectorError = sendGetRequest(path);
 
         SearchResult[] searchResults = [];
         if (connectorError != null) {
             return searchResults, connectorError;
         }
 
-        json jsonResponse = response.getJsonPayload().searchRecords;
+        json jsonResponse = response.searchRecords;
         json[] jsonSearchResults;
         jsonSearchResults, _ = (json[])jsonResponse;
 
