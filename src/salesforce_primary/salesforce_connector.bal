@@ -18,9 +18,10 @@
 
 package src.salesforce_primary;
 
+import ballerina.config;
 import ballerina.net.http;
 import ballerina.net.uri;
-import test.salesforce as oauth2;
+import oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
 @Description {value:"Salesforce core client connector"}
@@ -31,11 +32,10 @@ import test.salesforce as oauth2;
 @Param {value:"refreshToken: The refresh token of the salesforce account"}
 @Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
-public connector CoreClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                      string refreshTokenEndpoint, string refreshTokenPath) {
+public connector SalesforceConnector () {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
-        create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
+        getOAuth2ClientConnector();
     }
 
     error _;

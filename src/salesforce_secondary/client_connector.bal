@@ -28,11 +28,10 @@ import src.salesforce_primary as sfp;
 @Param {value:"refreshToken: The refresh token of the salesforce account"}
 @Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
 @Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
-public connector ClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                                  string refreshTokenEndpoint, string refreshTokenPath) {
+public connector ClientConnector () {
 
-    endpoint<sfp:CoreClientConnector> coreClientConnector {
-        create sfp:CoreClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
+    endpoint<sfp:SalesforceConnector> coreClientConnector {
+        create sfp:SalesforceConnector();
     }
 
     error _;

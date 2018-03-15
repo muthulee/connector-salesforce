@@ -18,7 +18,28 @@
 
 package src.salesforce_primary;
 
+import ballerina.config;
+import ballerina.io;
 import ballerina.net.http;
+import oauth2;
+
+oauth2:ClientConnector oauth2Connector = null;
+
+function getOAuth2ClientConnector () (oauth2:ClientConnector) {
+    if (oauth2Connector == null) {
+        io:println("Creating OAuth2 client");
+        oauth2Connector = create oauth2:ClientConnector(config:getGlobalValue(ENDPOINT),
+                                                        config:getGlobalValue(ACCESS_TOKEN),
+                                                        config:getGlobalValue(CLIENT_ID),
+                                                        config:getGlobalValue(CLIENT_SECRET),
+                                                        config:getGlobalValue(REFRESH_TOKEN),
+                                                        config:getGlobalValue(REFRESH_TOKEN_ENDPOINT),
+                                                        config:getGlobalValue(REFRESH_TOKEN_PATH));
+        io:println("OAuth2 Client created");
+    }
+
+    return oauth2Connector;
+}
 
 @Description {value:"Function to check errors and set errors to relevant error types"}
 @Param {value:"response: http response"}

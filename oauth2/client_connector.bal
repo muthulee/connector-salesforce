@@ -1,4 +1,4 @@
-package test.salesforce;
+package oauth2;
 
 import ballerina.net.http;
 
