@@ -20,8 +20,7 @@ package samples.salesforce;
 
 import ballerina.io;
 import ballerina.time;
-import src.salesforce_primary as sfp;
-import src.salesforce_secondary as sfs;
+import src.salesforce;
 
 string sampleSObjectAccount = "Account";
 string sampleSObjectLead = "Lead";
@@ -32,15 +31,11 @@ string apiVersion = "v37.0";
 
 public function main (string[] args) {
 
-    endpoint<sfp:SalesforceConnector> salesforceCoreConnector {
-        create sfp:SalesforceConnector();
+    endpoint<salesforce:SalesforceConnector> salesforceCoreConnector {
+        create salesforce:SalesforceConnector();
     }
 
-    endpoint<sfs:ClientConnector> salesforceConnector {
-        create sfs:ClientConnector();
-    }
-
-    sfp:SalesforceConnectorError err;
+    salesforce:SalesforceConnectorError err;
     json jsonResponse;
 
     time:Time now = time:currentTime();
@@ -56,7 +51,7 @@ public function main (string[] args) {
     checkErrors(err);
     io:println("Found " + lengthof apiVersions + " API versions");
 
-    jsonResponse, err = salesforceCoreConnector.getResourcesByApiVersion(sfp:API_VERSION);
+    jsonResponse, err = salesforceCoreConnector.getResourcesByApiVersion(salesforce:API_VERSION);
     checkErrors(err);
     io:println(string `Number of resources by API Version {{apiVersion}}: {{lengthof jsonResponse.getKeys()}}`);
 
@@ -107,9 +102,8 @@ public function main (string[] args) {
     /////////////////////////////////////////////////////////////////////////////////////////////////
     // ============================ Get, create, update, delete records ========================== //
 
-    jsonResponse, err = salesforceCoreConnector.createRecord(sampleSObjectAccount, account);
+    accountId, err = salesforceCoreConnector.createRecord(sampleSObjectAccount, account);
     if (err == null) {
-        accountId = jsonResponse.id.toString();
         io:println(string `Created {{sampleSObjectAccount}} with id: {{accountId}}`);
     } else {
         io:println(string `Error occurred when creating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
@@ -168,7 +162,7 @@ public function main (string[] args) {
     // ============================ Executing Queries and Searches ============================= //
 
     io:println("\n------------------------MAIN METHOD: Executing queries----------------");
-    sfp:QueryResult queryResult;
+    salesforce:QueryResult queryResult;
 
     queryResult, err = salesforceCoreConnector.query("SELECT name FROM Account");
     checkErrors(err);
@@ -179,14 +173,14 @@ public function main (string[] args) {
         io:println(string `Found {{lengthof queryResult.records}} results. Next result URL: {{queryResult.nextRecordsUrl}}`);
     }
 
-    sfp:QueryPlan[] queryPlans;
+    salesforce:QueryPlan[] queryPlans;
 
     queryPlans, err = salesforceCoreConnector.explainQueryOrReportOrListview("SELECT name FROM Account");
     checkErrors(err);
     io:println(string `Found {{lengthof queryPlans}} query plans`);
     io:println(queryPlans);
 
-    sfp:SearchResult[] searchResults;
+    salesforce:SearchResult[] searchResults;
     searchResults, err = salesforceCoreConnector.searchSOSLString(searchString);
     checkErrors(err);
     io:println(string `Found {{lengthof searchResults}} results for {{searchString}} SOSL search:`);
@@ -196,7 +190,7 @@ public function main (string[] args) {
     // ============================ ACCOUNT SObject: get, create, update, delete ===================== //
 
     io:println("\n------------------------ACCOUNT SObjecct Information----------------");
-    accountId, err = salesforceConnector.createAccount(account);
+    accountId, err = salesforceCoreConnector.createAccount(account);
     if (err == null) {
         io:println(string `Created {{sampleSObjectAccount}} with id: {{accountId}}`);
     } else {
@@ -204,18 +198,18 @@ public function main (string[] args) {
         return;
     }
 
-    jsonResponse, err = salesforceConnector.getAccountById(accountId);
+    jsonResponse, err = salesforceCoreConnector.getAccountById(accountId);
     io:println(string `Name of {{sampleSObjectAccount}} with id {{accountId}} is {{jsonResponse.Name.toString()}}`);
 
     account.Name = "ABC Pvt Ltd";
-    isUpdated, err = salesforceConnector.updateAccount(accountId, account);
+    isUpdated, err = salesforceCoreConnector.updateAccount(accountId, account);
     if (isUpdated) {
         io:println(string `{{sampleSObjectAccount}} successfully updated`);
     } else {
         io:println(string `Error occurred when updating {{sampleSObjectAccount}}: {{err.messages[0]}}`);
     }
 
-    isDeleted, err = salesforceConnector.deleteAccount(accountId);
+    isDeleted, err = salesforceCoreConnector.deleteAccount(accountId);
     if (isDeleted) {
         io:println(string `{{sampleSObjectAccount}}[{{accountId}}] successfully deleted`);
     } else {
@@ -226,7 +220,7 @@ public function main (string[] args) {
     //// ============================ LEAD SObject: get, create, update, delete ===================== //
 
     io:println("\n------------------------LEAD SObjecct Information-----------------------");
-    leadId, err = salesforceConnector.createLead(lead);
+    leadId, err = salesforceCoreConnector.createLead(lead);
     if (err == null) {
         io:println(string `Created {{sampleSObjectLead}} with id: {{leadId}}`);
     } else {
@@ -234,18 +228,18 @@ public function main (string[] args) {
         return;
     }
 
-    jsonResponse, err = salesforceConnector.getLeadById(leadId);
+    jsonResponse, err = salesforceCoreConnector.getLeadById(leadId);
     io:println(string `Name of {{sampleSObjectLead}} with id {{leadId}} is {{jsonResponse.LastName.toString()}}`);
 
     lead.City = "Colombo";
-    isUpdated, err = salesforceConnector.updateLead(leadId, lead);
+    isUpdated, err = salesforceCoreConnector.updateLead(leadId, lead);
     if (isUpdated) {
         io:println(string `{{sampleSObjectLead}} successfully updated`);
     } else {
         io:println(string `Error occurred when updating {{sampleSObjectLead}}: {{err.messages[0]}}`);
     }
 
-    isDeleted, err = salesforceConnector.deleteLead(leadId);
+    isDeleted, err = salesforceCoreConnector.deleteLead(leadId);
     if (isDeleted) {
         io:println(string `{{sampleSObjectLead}}[{{leadId}}] successfully deleted`);
     } else {
@@ -256,7 +250,7 @@ public function main (string[] args) {
     //// ============================ Contact SObject: get, create, update, delete ===================== //
 
     io:println("\n------------------------CONTACT SObjecct Information-----------------------");
-    contactId, err = salesforceConnector.createContact(contact);
+    contactId, err = salesforceCoreConnector.createContact(contact);
     if (err == null) {
         io:println(string `Created {{sampleSObjectContact}} with id: {{contactId}}`);
     } else {
@@ -264,18 +258,18 @@ public function main (string[] args) {
         return;
     }
 
-    jsonResponse, err = salesforceConnector.getContactById(contactId);
+    jsonResponse, err = salesforceCoreConnector.getContactById(contactId);
     io:println(string `Name of {{sampleSObjectContact}} with id {{contactId}} is {{jsonResponse.LastName.toString()}}`);
 
     contact.LastName = "Perterson";
-    isUpdated, err = salesforceConnector.updateContact(contactId, contact);
+    isUpdated, err = salesforceCoreConnector.updateContact(contactId, contact);
     if (isUpdated) {
         io:println(string `{{sampleSObjectContact}} successfully updated`);
     } else {
         io:println(string `Error occurred when updating {{sampleSObjectContact}}: {{err.messages[0]}}`);
     }
 
-    isDeleted, err = salesforceConnector.deleteContact(contactId);
+    isDeleted, err = salesforceCoreConnector.deleteContact(contactId);
     if (isDeleted) {
         io:println(string `{{sampleSObjectContact}}[{{contactId}}] successfully deleted`);
     } else {
@@ -284,30 +278,28 @@ public function main (string[] args) {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //// ========================= Opportunities SObject: get, create, update, delete =================== //
-    //
+
     //io:println("\n------------------------OPPORTUNITIES SObjecct Information-----------------------");
-    //json responseOpportunity;
-    //responseOpportunity, err = salesforceConnector.createOpportunity(opportunity);
+    //opportunityId, err = salesforceCoreConnector.createOpportunity(opportunity);
     //if (err == null) {
-    //    io:println(responseOpportunity);
     //    io:println(string `Created {{sampleSObjectOpportunity}} with id: {{opportunityId}}`);
     //} else {
     //    io:println(string `Error occurred when creating {{sampleSObjectOpportunity}}: {{err.messages[0]}}`);
     //    return;
     //}
     //
-    //jsonResponse, err = salesforceConnector.getOpportunityById(opportunityId);
+    //jsonResponse, err = salesforceCoreConnector.getOpportunityById(opportunityId);
     //io:println(string `Name of {{sampleSObjectOpportunity}} with id {{opportunityId}} is {{jsonResponse.CloseDate.toString()}}`);
     //
     //contact.Name = "Cloud";
-    //isUpdated, err = salesforceConnector.updateOpportunity(opportunityId, opportunity);
+    //isUpdated, err = salesforceCoreConnector.updateOpportunity(opportunityId, opportunity);
     //if (isUpdated) {
     //    io:println(string `{{sampleSObjectOpportunity}} successfully updated`);
     //} else {
     //    io:println(string `Error occurred when updating {{sampleSObjectOpportunity}}: {{err.messages[0]}}`);
     //}
     //
-    //isDeleted, err = salesforceConnector.deleteOpportunity(opportunityId);
+    //isDeleted, err = salesforceCoreConnector.deleteOpportunity(opportunityId);
     //if (isDeleted) {
     //    io:println(string `{{sampleSObjectOpportunity}}[{{opportunityId}}] successfully deleted`);
     //} else {
@@ -318,7 +310,7 @@ public function main (string[] args) {
     //// ============================ Products SObject: get, create, update, delete ===================== //
 
     io:println("\n------------------------PRODUCTS SObjecct Information-----------------------");
-    productId, err = salesforceConnector.createProduct(product);
+    productId, err = salesforceCoreConnector.createProduct(product);
     if (err == null) {
         io:println(string `Created {{sampleSObjectProduct}} with id: {{productId}}`);
     } else {
@@ -326,18 +318,18 @@ public function main (string[] args) {
         return;
     }
 
-    jsonResponse, err = salesforceConnector.getProductById(productId);
+    jsonResponse, err = salesforceCoreConnector.getProductById(productId);
     io:println(string `Name of {{sampleSObjectProduct}} with id {{productId}} is {{jsonResponse.Description.toString()}}`);
 
     contact.Description = "APIM and IS product";
-    isUpdated, err = salesforceConnector.updateProduct(productId, product);
+    isUpdated, err = salesforceCoreConnector.updateProduct(productId, product);
     if (isUpdated) {
         io:println(string `{{sampleSObjectProduct}} successfully updated`);
     } else {
         io:println(string `Error occurred when updating {{sampleSObjectProduct}}: {{err.messages[0]}}`);
     }
 
-    isDeleted, err = salesforceConnector.deleteProduct(productId);
+    isDeleted, err = salesforceCoreConnector.deleteProduct(productId);
     if (isDeleted) {
         io:println(string `{{sampleSObjectProduct}}[{{productId}}] successfully deleted`);
     } else {
@@ -345,12 +337,12 @@ public function main (string[] args) {
     }
 }
 
-function checkErrors (sfp:SalesforceConnectorError err) {
+function checkErrors (salesforce:SalesforceConnectorError err) {
     if (err != null) {
-        if (err.connectionError != null) {
-            io:println(string `Connection error: {{err.connectionError.message}}`);
-        } else {
+        if (err.salesforceErrors != null) {
             io:println(string `Salesforce Error {{err.salesforceErrors[0].message}} with error code: {{err.salesforceErrors[0].errorCode}}`);
+        } else {
+            io:println(string `Connector error: {{err.errors[0].message}}`);
         }
     }
 }

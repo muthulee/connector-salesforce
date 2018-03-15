@@ -16,7 +16,7 @@
 // under the License.
 //
 
-package src.salesforce_primary;
+package src.salesforce;
 
 import ballerina.net.http;
 import oauth2;
@@ -37,7 +37,6 @@ public connector SalesforceConnector () {
     }
 
     error _;
-    string baseURL = string `{{BASE_PATH}}/{{API_VERSION}}`;
 
     @Description {value:"List summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
@@ -148,13 +147,7 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action getRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
+        return getRecord(sObjectName, id);
     }
 
     @Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
@@ -194,18 +187,8 @@ public connector SalesforceConnector () {
     @Param {value:"record: json payload containing record data"}
     @Return {value:"response message"}
     @Return {value:"Error occured."}
-    action createRecord (string sObjectName, json record) (json, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-        SalesforceConnectorError connectorError;
-
-        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}`;
-        request.setJsonPayload(record);
-        response, err = oauth2Connector.post(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
-
-        return response.getJsonPayload(), connectorError;
+    action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
+        return createRecord(sObjectName, record);
     }
 
     @Description {value:"Updates existing records"}
@@ -214,21 +197,7 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action updateRecord (string sObjectName, string id, json record) (boolean, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-        SalesforceConnectorError connectorError;
-        boolean isUpdated;
-
-        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
-        request.setJsonPayload(record);
-        response, err = oauth2Connector.patch(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
-
-        if (connectorError == null) {
-            isUpdated = true;
-        }
-        return isUpdated, connectorError;
+        return updateRecord(sObjectName, id, record);
     }
 
     @Description {value:"Deletes existing records"}
@@ -237,20 +206,7 @@ public connector SalesforceConnector () {
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action deleteRecord (string sObjectName, string id) (boolean, SalesforceConnectorError) {
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-        SalesforceConnectorError connectorError;
-        boolean isDeleted;
-
-        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{id}}`;
-        response, err = oauth2Connector.delete(requestURI, request);
-        connectorError = checkAndSetErrors(response, err);
-
-        if (connectorError == null) {
-            isDeleted = true;
-        }
-        return isDeleted, connectorError;
+        return deleteRecord(sObjectName, id);
     }
 
     @Description {value:"Allows to create multiple records"}
@@ -489,5 +445,185 @@ public connector SalesforceConnector () {
             searchResults[i], _ = <SearchResult>result;
         }
         return searchResults, connectorError;
+    }
+
+    // ============================ ACCOUNT SObject: get, create, update, delete ===================== //
+
+    @Description {value:"Accesses Account SObject records based on the Account object ID"}
+    @Param {value:"accountId: The relevant account's id"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action getAccountById (string accountId) (json, SalesforceConnectorError) {
+        return getRecord(ACCOUNT, accountId);
+    }
+
+    @Description {value:"Creates new Account object record"}
+    @Param {value:"accountRecord: json payload containing Account record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action createAccount (json accountRecord) (string, SalesforceConnectorError) {
+        return createRecord(ACCOUNT, accountRecord);
+    }
+
+    @Description {value:"Updates existing Account object record"}
+    @Param {value:"accountId: Specified account id"}
+    @Param {value:"accountRecord: json payload containing Account record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action updateAccount (string accountId, json accountRecord) (boolean, SalesforceConnectorError) {
+        return updateRecord(ACCOUNT, accountId, accountRecord);
+
+    }
+
+    @Description {value:"Deletes existing Account's records"}
+    @Param {value:"accountId: The id of the relevant Account record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action deleteAccount (string accountId) (boolean, SalesforceConnectorError) {
+        return deleteRecord(ACCOUNT, accountId);
+    }
+
+    // ============================ LEAD SObject: get, create, update, delete ===================== //
+
+    @Description {value:"Accesses Lead SObject records based on the Lead object ID"}
+    @Param {value:"leadId: The relevant lead's id"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action getLeadById (string leadId) (json, SalesforceConnectorError) {
+        return getRecord(LEAD, leadId);
+    }
+
+    @Description {value:"Creates new Lead object record"}
+    @Param {value:"leadRecord: json payload containing Lead record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action createLead (json leadRecord) (string, SalesforceConnectorError) {
+        return createRecord(LEAD, leadRecord);
+    }
+
+    @Description {value:"Updates existing Lead object record"}
+    @Param {value:"leadId: Specified lead id"}
+    @Param {value:"leadRecord: json payload containing Lead record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action updateLead (string leadId, json leadRecord) (boolean, SalesforceConnectorError) {
+        return updateRecord(LEAD, leadId, leadRecord);
+    }
+
+    @Description {value:"Deletes existing Lead's records"}
+    @Param {value:"leadId: The id of the relevant Lead record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action deleteLead (string leadId) (boolean, SalesforceConnectorError) {
+        return deleteRecord(LEAD, leadId);
+    }
+
+    // ============================ CONTACTS SObject: get, create, update, delete ===================== //
+
+    @Description {value:"Accesses Contacts SObject records based on the Contact object ID"}
+    @Param {value:"contactId: The relevant contact's id"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action getContactById (string contactId) (json, SalesforceConnectorError) {
+        return getRecord(CONTACT, contactId);
+    }
+
+    @Description {value:"Creates new Contact object record"}
+    @Param {value:"contactRecord: json payload containing Contact record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action createContact (json contactRecord) (string, SalesforceConnectorError) {
+        return createRecord(CONTACT, contactRecord);
+    }
+
+    @Description {value:"Updates existing Contact object record"}
+    @Param {value:"contactId: Specified contact id"}
+    @Param {value:"contactRecord: json payload containing contact record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action updateContact (string contactId, json contactRecord) (boolean, SalesforceConnectorError) {
+        return updateRecord(CONTACT, contactId, contactRecord);
+    }
+
+    @Description {value:"Deletes existing Contact's records"}
+    @Param {value:"contactId: The id of the relevant Contact record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action deleteContact (string contactId) (boolean, SalesforceConnectorError) {
+        return deleteRecord(CONTACT, contactId);
+    }
+
+    // ============================ OPPORTUNITIES SObject: get, create, update, delete ===================== //
+
+    @Description {value:"Accesses Opportunities SObject records based on the Opportunity object ID"}
+    @Param {value:"opportunityId: The relevant opportunity's id"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action getOpportunityById (string opportunityId) (json, SalesforceConnectorError) {
+        return getRecord(OPPORTUNITY, opportunityId);
+
+    }
+
+    @Description {value:"Creates new Opportunity object record"}
+    @Param {value:"opportunityRecord: json payload containing Opportunity record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action createOpportunity (json opportunityRecord) (string, SalesforceConnectorError) {
+        return createRecord(OPPORTUNITY, opportunityRecord);
+
+    }
+
+    @Description {value:"Updates existing Opportunity object record"}
+    @Param {value:"opportunityId: Specified opportunity id"}
+    @Param {value:"opportunityRecord: json payload containing Opportunity record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action updateOpportunity (string opportunityId, json opportunityRecord) (boolean, SalesforceConnectorError) {
+        return updateRecord(OPPORTUNITY, opportunityId, opportunityRecord);
+
+    }
+
+    @Description {value:"Deletes existing Opportunity records"}
+    @Param {value:"opportunityId: The id of the relevant Opportunity record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action deleteOpportunity (string opportunityId) (boolean, SalesforceConnectorError) {
+        return deleteRecord(OPPORTUNITY, opportunityId);
+
+    }
+
+    // ============================ PRODUCTS SObject: get, create, update, delete ===================== //
+
+    @Description {value:"Accesses Products SObject records based on the Product object ID"}
+    @Param {value:"productId: The relevant product's id"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action getProductById (string productId) (json, SalesforceConnectorError) {
+        return getRecord(PRODUCT, productId);
+    }
+
+    @Description {value:"Creates new Product object record"}
+    @Param {value:"productRecord: json payload containing Product record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action createProduct (json productRecord) (string, SalesforceConnectorError) {
+        return createRecord(PRODUCT, productRecord);
+    }
+
+    @Description {value:"Updates existing Product object record"}
+    @Param {value:"productId: Specified product id"}
+    @Param {value:"productRecord: json payload containing product record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action updateProduct (string productId, json productRecord) (boolean, SalesforceConnectorError) {
+        return updateRecord(PRODUCT, productId, productRecord);
+    }
+
+    @Description {value:"Deletes existing product's records"}
+    @Param {value:"productId: The id of the relevant Product record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured during oauth2 client invocation."}
+    action deleteProduct (string productId) (boolean, SalesforceConnectorError) {
+        return deleteRecord(PRODUCT, productId);
     }
 }

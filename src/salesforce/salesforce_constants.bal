@@ -16,7 +16,7 @@
 // under the License.
 //
 
-package src.salesforce_primary;
+package src.salesforce;
 
 // Ballerina config keys
 public const string ENDPOINT = "ENDPOINT";
