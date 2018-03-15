@@ -41,9 +41,9 @@ IMPORTANT This access token and refresh token can be used to make API requests o
 
 [describeAvailableObjects()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_describeGlobal.htm)
 Lists the available objects and their metadata for your organization’s data
-Properties
-@Return {value:"Array of available objects"}
-@Return {value:"Error occured "}
+*Properties
+   *@Return {value:"Array of available objects"}
+   *@Return {value:"Error occured "}
 
 [describeSObject()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_sobject_describe.htm)
 Completely describes the individual metadata at all levels for the specified object
