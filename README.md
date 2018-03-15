@@ -19,7 +19,7 @@ Salesforcerest connector actions are being invoked by a ballerina main function.
 ## Getting started
 
 1. Download the Ballerina tool 0.964.0 distribution by navigating to https://ballerinalang.org/downloads/
-2. Navigate to [here](https://github.com/wso2-ballerina/package-oauth2/pull/12) or [here](https://github.com/keerthu/package-oauth2/tree/6622641069a7dcb9628ccdc62b8072a2872b0d4f) Download, build the POM and copy oauth2 jar file into    the <ballerina-tools>/bre/lib folder.
+2. Navigate to the [pull request](https://github.com/wso2-ballerina/package-oauth2/pull/12) or [repository](https://github.com/keerthu/package-oauth2/tree/6622641069a7dcb9628ccdc62b8072a2872b0d4f) Download, build the POM and copy oauth2 jar file into    the <ballerina-tools>/bre/lib folder.
 3. Clone the repository by running the following command
    git clone https://github.com/erandiganepola/connector-salesforce.git
    Import the package to your ballerina project.
@@ -37,7 +37,6 @@ Create a Salesforce organization, create a connected app by visiting Salesforce 
 
 IMPORTANT This access token and refresh token can be used to make API requests on your own account's behalf. Do not share your access token, client secret with anyone.
 
-## Quick Testing
 ### Working with Salesforce REST connector actions
 
 [describeAvailableObjects()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_describeGlobal.htm)
