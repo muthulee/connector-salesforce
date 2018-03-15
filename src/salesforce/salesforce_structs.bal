@@ -16,9 +16,7 @@
 // under the License.
 //
 
-package src.salesforce_primary;
-
-import ballerina.net.http;
+package src.salesforce;
 
 public struct ApiVersion {
     string |version|;
@@ -33,7 +31,7 @@ public struct SalesforceError {
 
 public struct SalesforceConnectorError {
     string[] messages;
-    http:HttpConnectorError connectionError;
+    error[] errors;
     SalesforceError[] salesforceErrors;
 }
 
