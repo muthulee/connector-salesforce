@@ -231,7 +231,7 @@ Get feedback on how Salesforce will execute the query, report, or list view base
     * @Return {value:"response message"}
     * @Return {value:"Error occured"}
 
-[searchSOSLString()] (https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_search.htm?search_text=feedback)
+[searchSOSLString()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_search.htm?search_text=feedback)
 Executes the specified SOSL search
 * Properties
     * @Param {value:"searchString: The request SOSL string"}
