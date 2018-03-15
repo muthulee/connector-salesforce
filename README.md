@@ -9,6 +9,10 @@ Ballerina is a strong and flexible language. Also it is JSON friendly. It provid
 
 Salesforcerest connector actions are being invoked by a ballerina main function. The following section provides you the details on how to use Ballerina Salesforce connector.
 
+
+![alt text](https://github.com/erandiganepola/connector-salesforce/blob/master/salesforce.png)
+
+
 ## Compatibility
 
 | Language Version  | Connector Version | API Version |
