@@ -54,9 +54,10 @@ Properties
 
 [getAvailableApiVersions()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_versions.htm?search_text=error)
 Lists summary information about each REST API version currently available
+
 Properties
-@Return {value:"Array of available API versions"}
-@Return {value:"Error occured"}
+   @Return {value:"Array of available API versions"}
+   @Return {value:"Error occured"}
 
 [getOrganizationLimits()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_limits.htm)
 Lists limits information for your organization
