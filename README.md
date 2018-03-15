@@ -62,6 +62,12 @@ Lists summary information about each REST API version currently available
    * @Return {value:"Array of available API versions"}
    * @Return {value:"Error occured"}
 
+[getResourcesByApiVersion()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_discoveryresource.htm)
+Lists the resources available for the specified API version
+* Properties
+   * @Return {value:"response message"}
+   * @Return {value:"Error occurred"}
+   
 [getOrganizationLimits()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_limits.htm)
 Lists limits information for your organization
 * Properties
@@ -199,3 +205,35 @@ Updates an existing record
    * @Param {value:"record: json payload containing record data"}
    * @Return {value:"response message"}
    * @Return {value:"Error occured."}
+   
+[getUpdatedRecords()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_getupdated.htm?search_text=updated)
+Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object
+* Properties
+    * @Param {value:"sobjectName: The relevant sobject name"}
+    * @Param {value:"startTime: The start time of the time span"}
+    * @Param {value:"endTime: The end time of the time span"}
+    * @Return {value:"response message"}
+    * @Return {value:"Error occured"}
+
+[getDeletedRecords()]()
+Retrieves the list of individual records that have been deleted within the given timespan for the specified object
+* Properties
+    * @Param {value:"sobjectName: The relevant sobject name"}
+    * @Param {value:"startTime: The start time of the time span"}
+    * @Param {value:"endTime: The end time of the time span"}
+    * @Return {value:"response message"}
+    * @Return {value:"Error occured."}
+
+[explainQueryOrReportOrListview()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_query_explain.htm?search_text=explain)
+Get feedback on how Salesforce will execute the query, report, or list view based on performance
+* Properties
+    * @Param {value:"queryReportOrListview: The parameter to get feedback on"}
+    * @Return {value:"response message"}
+    * @Return {value:"Error occured"}
+
+[searchSOSLString()] (https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/dome_search.htm?search_text=feedback)
+Executes the specified SOSL search
+* Properties
+    * @Param {value:"searchString: The request SOSL string"}
+    * @Return {value:"returns results in SearchResult struct"}
+    * @Return {value:"Error occured"}
