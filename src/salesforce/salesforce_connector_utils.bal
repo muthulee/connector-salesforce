@@ -114,7 +114,10 @@ function deleteRecord (string sObjectName, string id) (boolean, SalesforceConnec
     return connectorError == null, connectorError;
 }
 
-
+@Description {value:"Prepare and send the request"}
+@Param {value:"url: The relevant url to be used to send the request"}
+@Return {value:"response json"}
+@Return {value:"Error occured."}
 function sendGetRequest (string url) (json, SalesforceConnectorError) {
     endpoint<oauth2:ClientConnector> oauth2Connector {
         getOAuth2ClientConnector();
@@ -137,6 +140,9 @@ function sendGetRequest (string url) (json, SalesforceConnectorError) {
     return payload, connectorError;
 }
 
+@Description {value:"Prepare and send DELETE request"}
+@Param {value:"url: The relevant url to be used to send the request"}
+@Return {value:"Error occured."}
 function sendDeleteRequest (string url) (SalesforceConnectorError) {
     endpoint<oauth2:ClientConnector> oauth2Connector {
         getOAuth2ClientConnector();
@@ -154,6 +160,11 @@ function sendDeleteRequest (string url) (SalesforceConnectorError) {
     return connectorError;
 }
 
+@Description {value:"Prepare and send POST request"}
+@Param {value:"url: The relevant url to be used to send the request"}
+@Param {value:"body: json payload to be sent as request body"}
+@Return {value:"response json"}
+@Return {value:"Error occured."}
 function sendPostRequest (string url, json body) (json, SalesforceConnectorError) {
     endpoint<oauth2:ClientConnector> oauth2Connector {
         getOAuth2ClientConnector();
@@ -177,6 +188,10 @@ function sendPostRequest (string url, json body) (json, SalesforceConnectorError
     return payload, connectorError;
 }
 
+@Description {value:"Prepare and send PATCH request"}
+@Param {value:"url: The relevant url to be used to send the request"}
+@Param {value:"body: json payload to be sent as request body"}
+@Return {value:"Error occured."}
 function sendPatchRequest (string url, json body) (SalesforceConnectorError) {
     endpoint<oauth2:ClientConnector> oauth2Connector {
         getOAuth2ClientConnector();
@@ -195,7 +210,11 @@ function sendPatchRequest (string url, json body) (SalesforceConnectorError) {
     return connectorError;
 }
 
-
+@Description {value:"Function to prepare the URL endpoint for the request"}
+@Param {value:"paths: URL prefixes and suffixes to set the endpoint"}
+@Param {value:"queryParamNames: query parameter names"}
+@Param {value:"queryParamValues: query parameter values"}
+@Return {value:"Prepared URL"}
 function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) (string) {
     string url = "";
     error e;
@@ -261,6 +280,9 @@ function checkAndSetErrors (http:InResponse response, http:HttpConnectorError ht
     return connectorError;
 }
 
+@Description {value:"Function to set errors to SalesforceConnectorError type"}
+@Param {value:"error: error sent"}
+@Return {value:"SaleforceConnectorError occured"}
 function setError (error e) (SalesforceConnectorError) {
     SalesforceConnectorError connectorError = {messages:[], errors:[]};
     connectorError.messages[0] = e.message;

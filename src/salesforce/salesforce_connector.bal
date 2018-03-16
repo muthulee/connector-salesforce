@@ -36,9 +36,7 @@ public connector SalesforceConnector () {
         getOAuth2ClientConnector();
     }
 
-    error _;
-
-    @Description {value:"List summary details about each REST API version available"}
+    @Description {value:"Lists summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
     @Return {value:"Error occured"}
     action getAvailableApiVersions () (json[], SalesforceConnectorError) {
@@ -362,7 +360,7 @@ public connector SalesforceConnector () {
         return result, connectorError;
     }
 
-    @Description {value:"QueryAll will return records that have been deleted because of a merge or delete, archived Task
+    @Description {value:"Returns records that have been deleted because of a merge or delete, archived Task
      and Event records"}
     @Param {value:"apiVersion: The api version to send request to"}
     @Param {value:"queryString: The request SOQL query"}
