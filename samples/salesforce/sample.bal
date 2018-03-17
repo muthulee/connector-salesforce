@@ -37,16 +37,14 @@ string refreshToken="5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxzBz58_XPXL
 string refreshTokenEndpoint="https://test.salesforce.com";
 string refreshTokenPath="/services/oauth2/token";
 
-boolean isOauth2Initialized = false;
-
 public function main (string[] args) {
 
     endpoint<salesforce:SalesforceConnector> salesforceCoreConnector {
         create salesforce:SalesforceConnector(url, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
     }
 
-    isOauth2Initialized = salesforceCoreConnector.init();
-    io:println(string `OAuth2 client initialized: {{isOauth2Initialized}}`);
+    salesforceCoreConnector.init();
+    io:println(string `OAuth2 client initialized`);
 
     salesforce:SalesforceConnectorError err;
     json jsonResponse;

@@ -248,7 +248,6 @@ function checkAndSetErrors (http:InResponse response, http:HttpConnectorError ht
                          };
     } else if (response.statusCode != 200 && response.statusCode != 201 && response.statusCode != 204) {
         json[] body;
-        error _;
         body, _ = (json[])response.getJsonPayload();
         connectorError = {messages:[], salesforceErrors:[]};
         foreach i, e in body {

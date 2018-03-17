@@ -42,19 +42,18 @@ public connector SalesforceConnector (string baseUrl, string accessToken, string
 
     @Description {value:"Initialize OAuth2 Client Connector"}
     @Return {value:"Returns true if success or already exists"}
-    action init () (boolean) {
+    action init () {
         if (!isOAuth2Initialized) {
             oauth2ConnectorInstance = create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken,
                                                                     refreshTokenEndpoint, refreshTokenPath);
             isOAuth2Initialized = true;
         }
-        return isOAuth2Initialized;
     }
 
     @Description {value:"Lists summary details about each REST API version available"}
     @Return {value:"Array of available API versions"}
     @Return {value:"Error occured"}
-    action getAvailableApiVersions () (json[], SalesforceConnectorError) {
+   action getAvailableApiVersions () (json[], SalesforceConnectorError) {
         SalesforceConnectorError connectorError;
         json response;
         json[] apiVersions;
