@@ -18,28 +18,37 @@
 
 package src.salesforce;
 
-import ballerina.config;
-import ballerina.io;
 import ballerina.log;
 import ballerina.net.http;
 import ballerina.net.uri;
 import oauth2;
 
-oauth2:ClientConnector oauth2Connector = null;
+oauth2:ClientConnector oauth2Connector;
+boolean isInitiated = false;
 
-function getOAuth2ClientConnector () (oauth2:ClientConnector) {
+@Description {value:"Initiate Oauth2 Client Connector "}
+@Param {value:"baseUrl: The endpoint base url"}
+@Param {value:"accessToken: The access token of the salesforce account"}
+@Param {value:"clientId: The client Id of the salesforce account"}
+@Param {value:"clientSecret: The client secret of the salesforce account"}
+@Param {value:"refreshToken: The refresh token of the salesforce account"}
+@Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
+@Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
+@Param {value:"boolen: set and return true if successfully initiated"}
+function setOAuth2ClientConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
+                                   string refreshTokenEndpoint, string refreshTokenPath) (boolean) {
     if (oauth2Connector == null) {
-        io:println("Creating OAuth2 client");
-        oauth2Connector = create oauth2:ClientConnector(config:getGlobalValue(ENDPOINT),
-                                                        config:getGlobalValue(ACCESS_TOKEN),
-                                                        config:getGlobalValue(CLIENT_ID),
-                                                        config:getGlobalValue(CLIENT_SECRET),
-                                                        config:getGlobalValue(REFRESH_TOKEN),
-                                                        config:getGlobalValue(REFRESH_TOKEN_ENDPOINT),
-                                                        config:getGlobalValue(REFRESH_TOKEN_PATH));
-        io:println("OAuth2 Client created");
+        oauth2Connector = create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken,
+                                                        refreshTokenEndpoint, refreshTokenPath);
+        isInitiated = true;
+
+        return isInitiated;
     }
 
+    return isInitiated;
+}
+
+function getOAuth2ClientConnector () (oauth2:ClientConnector) {
     return oauth2Connector;
 }
 

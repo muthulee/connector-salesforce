@@ -23,17 +23,21 @@ import oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
 @Description {value:"Salesforce core client connector"}
-@Param {value:"baseUrl: The endpoint base url"}
-@Param {value:"accessToken: The access token of the salesforce account"}
-@Param {value:"clientId: The client Id of the salesforce account"}
-@Param {value:"clientSecret: The client secret of the salesforce account"}
-@Param {value:"refreshToken: The refresh token of the salesforce account"}
-@Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
-@Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
 public connector SalesforceConnector () {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
         getOAuth2ClientConnector();
+    }
+
+    @Description {value:"Lists summary details about each REST API version available"}
+    @Return {value:"Array of available API versions"}
+    @Return {value:"Error occured"}
+    action init (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
+                 string refreshTokenEndpoint, string refreshTokenPath) (boolean) {
+        boolean isAuth2Initiated = setOAuth2ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken,
+                                                   refreshTokenEndpoint, refreshTokenPath);
+
+        return isAuth2Initiated;
     }
 
     @Description {value:"Lists summary details about each REST API version available"}
