@@ -22,22 +22,33 @@ import ballerina.net.http;
 import oauth2;
 //import org.wso2.ballerina.connectors.oauth2;
 
-@Description {value:"Salesforce core client connector"}
-public connector SalesforceConnector () {
+oauth2:ClientConnector oauth2ConnectorInstance;
+boolean isOAuth2Initialized = false;
+
+@Description {value:"Salesforce Client connector"}
+@Param {value:"baseUrl: The endpoint base url"}
+@Param {value:"accessToken: The access token of the salesforce account"}
+@Param {value:"clientId: The client Id of the salesforce account"}
+@Param {value:"clientSecret: The client secret of the salesforce account"}
+@Param {value:"refreshToken: The refresh token of the salesforce account"}
+@Param {value:"refreshTokenEndpoint: The refresh token endpoint url"}
+@Param {value:"refreshTokenPath: The path for obtaining a refresh token"}
+public connector SalesforceConnector (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
+                                      string refreshTokenEndpoint, string refreshTokenPath) {
 
     endpoint<oauth2:ClientConnector> oauth2Connector {
-        getOAuth2ClientConnector();
+        oauth2ConnectorInstance;
     }
 
-    @Description {value:"Lists summary details about each REST API version available"}
-    @Return {value:"Array of available API versions"}
-    @Return {value:"Error occured"}
-    action init (string baseUrl, string accessToken, string clientId, string clientSecret, string refreshToken,
-                 string refreshTokenEndpoint, string refreshTokenPath) (boolean) {
-        boolean isAuth2Initiated = setOAuth2ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken,
-                                                   refreshTokenEndpoint, refreshTokenPath);
-
-        return isAuth2Initiated;
+    @Description {value:"Initialize OAuth2 Client Connector"}
+    @Return {value:"Returns true if success or already exists"}
+    action init () (boolean) {
+        if (!isOAuth2Initialized) {
+            oauth2ConnectorInstance = create oauth2:ClientConnector(baseUrl, accessToken, clientId, clientSecret, refreshToken,
+                                                                    refreshTokenEndpoint, refreshTokenPath);
+            isOAuth2Initialized = true;
+        }
+        return isOAuth2Initialized;
     }
 
     @Description {value:"Lists summary details about each REST API version available"}
