@@ -141,7 +141,7 @@ Executes the specified SOQL query
     * @Return {value:"returns QueryResult struct"}
     * @Return {value:"Error occured"}
 
-[getAllQueries](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_queryall.htm?search_text=updated)
+[getAllQueries()](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/resources_queryall.htm?search_text=updated)
 QueryAll will return records that have been deleted because of a merge or delete, archived Task and Event records
 * Properties
     * @Param {value:"apiVersion: The api version to send request to"}
