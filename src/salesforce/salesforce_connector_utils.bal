@@ -243,8 +243,8 @@ function checkAndSetErrors (http:InResponse response, http:HttpConnectorError ht
             try {
                 responseBody = response.getJsonPayload();
             } catch (error e) {
-                connectorError = {messages:[], salesforceErrors:[]};
-                connectorError.messages[0] = "Error occured while receiving Json payload: Found null!";
+                connectorError = {messages:[]};
+                connectorError.messages[0] = e.message;
                 connectorError.errors[0] = e;
             }
         }
@@ -253,8 +253,8 @@ function checkAndSetErrors (http:InResponse response, http:HttpConnectorError ht
         try {
             errorResponseBody, _ = (json[])response.getJsonPayload();
         } catch (error e) {
-            connectorError = {messages:[], salesforceErrors:[]};
-            connectorError.messages[0] = "Error occured while receiving Json payload: Found null!";
+            connectorError = {messages:[]};
+            connectorError.messages[0] = e.message;
             connectorError.errors[0] = e;
         }
 

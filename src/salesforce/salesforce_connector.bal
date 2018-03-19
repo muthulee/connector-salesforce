@@ -226,6 +226,10 @@ public connector SalesforceConnector (string baseUrl, string accessToken, string
     @Return {value:"response message"}
     @Return {value:"Error occured"}
     action createMultipleRecords (string sObjectName, json payload) (json, SalesforceConnectorError) {
+        endpoint<oauth2:ClientConnector> oauth2Connector {
+            oauth2ConnectorInstance;
+        }
+
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
@@ -267,6 +271,10 @@ public connector SalesforceConnector (string baseUrl, string accessToken, string
     @Return {value:"response message"}
     @Return {value:"Error occured."}
     action upsertSObjectByExternalId (string sObjectName, string fieldId, string fieldValue, json record) (json, SalesforceConnectorError) {
+        endpoint<oauth2:ClientConnector> oauth2Connector {
+            oauth2ConnectorInstance;
+        }
+
         http:OutRequest request = {};
         http:InResponse response = {};
         http:HttpConnectorError err;
