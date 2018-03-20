@@ -94,235 +94,6 @@ public connector SalesforceConnector (string baseUrl, string accessToken, string
         return response, connectorError;
     }
 
-    // ============================ Describe SObjects available and their fields/metadata ===================== //
-
-    @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
-    @Return {value:"Array of available objects"}
-    @Return {value:"Error occured "}
-    action describeAvailableObjects () (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Describes the individual metadata for the specified object"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured "}
-    action getSObjectBasicInfo (string sobjectName) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sobjectName], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Completely describes the individual metadata at all levels for the specified object.
-                        Can be used to retrieve the fields, URLs, and child relationships"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action describeSObject (string sObjectName) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DESCRIBE], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action sObjectPlatformAction () (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, PLATFORM_ACTION], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    // ============================ Get, create, update, delete records ===================== //
-
-    @Description {value:"Accesses records based on the specified object ID, can be used with external objects "}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action getRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
-        return getRecord(sObjectName, id);
-    }
-
-    @Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"rowId: The row ID of the required record"}
-    @Param {value:"fields: The comma separated set of required fields"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action getFieldValuesFromSObjectRecord (string sObjectName, string id, string fields) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], [FIELDS], [fields]);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Retrieve field values from an external object record using Salesforce ID or External ID"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"rowId: The row ID of the required record"}
-    @Param {value:"fields: The comma separated set of required fields"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action getFieldValuesFromExternalObjectRecord (string externalObjectName, string id, string fields)
-    (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, externalObjectName, id], [FIELDS], [fields]);
-        response, connectorError = sendGetRequest(path);
-        return response, connectorError;
-    }
-
-    @Description {value:"Creates new records"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"record: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
-        return createRecord(sObjectName, record);
-    }
-
-    @Description {value:"Updates existing records"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"record: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action updateRecord (string sObjectName, string id, json record) (boolean, SalesforceConnectorError) {
-        return updateRecord(sObjectName, id, record);
-    }
-
-    @Description {value:"Deletes existing records"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"id: The id of the relevant record supposed to be deleted"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action deleteRecord (string sObjectName, string id) (boolean, SalesforceConnectorError) {
-        return deleteRecord(sObjectName, id);
-    }
-
-    @Description {value:"Allows to create multiple records"}
-    @Param {value:"sObjectName: The relevant sobject name"}
-    @Param {value:"payload: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action createMultipleRecords (string sObjectName, json payload) (json, SalesforceConnectorError) {
-        endpoint<oauth2:ClientConnector> oauth2Connector {
-            oauth2ConnectorInstance;
-        }
-
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-        SalesforceConnectorError connectorError;
-        json jsonPayload;
-
-        string requestURI = string `{{API_BASE_PATH}}/{{MULTIPLE_RECORDS}}/{{sObjectName}}`;
-        request.setJsonPayload(payload);
-        response, err = oauth2Connector.get(requestURI, request);
-        jsonPayload, connectorError = checkAndSetErrors(response, err, true);
-
-        return jsonPayload, connectorError;
-    }
-
-    // ============================ Create, update, delete records by External IDs ===================== //
-
-    @Description {value:"Accesses records based on the value of a specified external ID field"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"fieldName: The external field name"}
-    @Param {value:"fieldValue: The external field value"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action getRecordByExternalId (string sObjectName, string fieldName, string fieldValue) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, fieldName, fieldValue], null, null);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
-     specified external ID field"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"fieldId: The external field id"}
-    @Param {value:"fieldValue: The external field value"}
-    @Param {value:"record: json payload containing record data"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action upsertSObjectByExternalId (string sObjectName, string fieldId, string fieldValue, json record) (json, SalesforceConnectorError) {
-        endpoint<oauth2:ClientConnector> oauth2Connector {
-            oauth2ConnectorInstance;
-        }
-
-        http:OutRequest request = {};
-        http:InResponse response = {};
-        http:HttpConnectorError err;
-        SalesforceConnectorError connectorError;
-        json jsonPayload;
-
-        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldId}}/{{fieldValue}}`;
-        request.setJsonPayload(record);
-        response, err = oauth2Connector.patch(requestURI, request);
-        jsonPayload, connectorError = checkAndSetErrors(response, err, false);
-
-        return jsonPayload, connectorError;
-    }
-
-    // ============================ Get updated and deleted records ===================== //
-
-    @Description {value:"Retrieves the list of individual records that have been deleted within the given timespan for the specified object"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"startTime: The start time of the time span"}
-    @Param {value:"endTime: The end time of the time span"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured."}
-    action getDeletedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DELETED], [START, END], [startTime, endTime]);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
-    @Description {value:"Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object"}
-    @Param {value:"sobjectName: The relevant sobject name"}
-    @Param {value:"startTime: The start time of the time span"}
-    @Param {value:"endTime: The end time of the time span"}
-    @Return {value:"response message"}
-    @Return {value:"Error occured"}
-    action getUpdatedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
-        SalesforceConnectorError connectorError;
-        json response;
-
-        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, UPDATED], [START, END], [startTime, endTime]);
-        response, connectorError = sendGetRequest(path);
-
-        return response, connectorError;
-    }
-
     // ================================= Query ================================ //
 
     @Description {value:"Executes the specified SOQL query"}
@@ -617,5 +388,234 @@ public connector SalesforceConnector (string baseUrl, string accessToken, string
     @Return {value:"Error occured during oauth2 client invocation."}
     action deleteProduct (string productId) (boolean, SalesforceConnectorError) {
         return deleteRecord(PRODUCT, productId);
+    }
+
+    // ============================ Generic actions: Get, create, update, delete records ===================== //
+
+    @Description {value:"Accesses records based on the specified object ID, can be used with external objects "}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action getRecord (string sObjectName, string id) (json, SalesforceConnectorError) {
+        return getRecord(sObjectName, id);
+    }
+
+    @Description {value:"Creates new records"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"record: json payload containing record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action createRecord (string sObjectName, json record) (string, SalesforceConnectorError) {
+        return createRecord(sObjectName, record);
+    }
+
+    @Description {value:"Updates existing records"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"record: json payload containing record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action updateRecord (string sObjectName, string id, json record) (boolean, SalesforceConnectorError) {
+        return updateRecord(sObjectName, id, record);
+    }
+
+    @Description {value:"Deletes existing records"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"id: The id of the relevant record supposed to be deleted"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action deleteRecord (string sObjectName, string id) (boolean, SalesforceConnectorError) {
+        return deleteRecord(sObjectName, id);
+    }
+
+    @Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"rowId: The row ID of the required record"}
+    @Param {value:"fields: The comma separated set of required fields"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getFieldValuesFromSObjectRecord (string sObjectName, string id, string fields) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], [FIELDS], [fields]);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Retrieve field values from an external object record using Salesforce ID or External ID"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"rowId: The row ID of the required record"}
+    @Param {value:"fields: The comma separated set of required fields"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getFieldValuesFromExternalObjectRecord (string externalObjectName, string id, string fields)
+    (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, externalObjectName, id], [FIELDS], [fields]);
+        response, connectorError = sendGetRequest(path);
+        return response, connectorError;
+    }
+
+    @Description {value:"Allows to create multiple records"}
+    @Param {value:"sObjectName: The relevant sobject name"}
+    @Param {value:"payload: json payload containing record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action createMultipleRecords (string sObjectName, json payload) (json, SalesforceConnectorError) {
+        endpoint<oauth2:ClientConnector> oauth2Connector {
+            oauth2ConnectorInstance;
+        }
+
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+        json jsonPayload;
+
+        string requestURI = string `{{API_BASE_PATH}}/{{MULTIPLE_RECORDS}}/{{sObjectName}}`;
+        request.setJsonPayload(payload);
+        response, err = oauth2Connector.get(requestURI, request);
+        jsonPayload, connectorError = checkAndSetErrors(response, err, true);
+
+        return jsonPayload, connectorError;
+    }
+
+    // ============================ Create, update, delete records by External IDs ===================== //
+
+    @Description {value:"Accesses records based on the value of a specified external ID field"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"fieldName: The external field name"}
+    @Param {value:"fieldValue: The external field value"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getRecordByExternalId (string sObjectName, string fieldName, string fieldValue) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, fieldName, fieldValue], null, null);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Creates new records or updates existing records (upserts records) based on the value of a
+     specified external ID field"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"fieldId: The external field id"}
+    @Param {value:"fieldValue: The external field value"}
+    @Param {value:"record: json payload containing record data"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action upsertSObjectByExternalId (string sObjectName, string fieldId, string fieldValue, json record) (json, SalesforceConnectorError) {
+        endpoint<oauth2:ClientConnector> oauth2Connector {
+            oauth2ConnectorInstance;
+        }
+
+        http:OutRequest request = {};
+        http:InResponse response = {};
+        http:HttpConnectorError err;
+        SalesforceConnectorError connectorError;
+        json jsonPayload;
+
+        string requestURI = string `{{API_BASE_PATH}}/{{SOBJECTS}}/{{sObjectName}}/{{fieldId}}/{{fieldValue}}`;
+        request.setJsonPayload(record);
+        response, err = oauth2Connector.patch(requestURI, request);
+        jsonPayload, connectorError = checkAndSetErrors(response, err, false);
+
+        return jsonPayload, connectorError;
+    }
+
+    // ============================ Get updated and deleted records ===================== //
+
+    @Description {value:"Retrieves the list of individual records that have been deleted within the given timespan for the specified object"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"startTime: The start time of the time span"}
+    @Param {value:"endTime: The end time of the time span"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action getDeletedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DELETED], [START, END], [startTime, endTime]);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Retrieves the list of individual records that have been updated (added or changed) within the given timespan for the specified object"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Param {value:"startTime: The start time of the time span"}
+    @Param {value:"endTime: The end time of the time span"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action getUpdatedRecords (string sObjectName, string startTime, string endTime) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, UPDATED], [START, END], [startTime, endTime]);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    // ============================ Describe SObjects available and their fields/metadata ===================== //
+
+    @Description {value:"Lists the available objects and their metadata for your organization and available to the logged-in user"}
+    @Return {value:"Array of available objects"}
+    @Return {value:"Error occured "}
+    action describeAvailableObjects () (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS], null, null);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Describes the individual metadata for the specified object"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured "}
+    action getSObjectBasicInfo (string sobjectName) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sobjectName], null, null);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Completely describes the individual metadata at all levels for the specified object.
+                        Can be used to retrieve the fields, URLs, and child relationships"}
+    @Param {value:"sobjectName: The relevant sobject name"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured."}
+    action describeSObject (string sObjectName) (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, DESCRIBE], null, null);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
+    }
+
+    @Description {value:"Query for actions displayed in the UI, given a user, a context, device format, and a record ID"}
+    @Return {value:"response message"}
+    @Return {value:"Error occured"}
+    action sObjectPlatformAction () (json, SalesforceConnectorError) {
+        SalesforceConnectorError connectorError;
+        json response;
+
+        string path = prepareUrl([API_BASE_PATH, SOBJECTS, PLATFORM_ACTION], null, null);
+        response, connectorError = sendGetRequest(path);
+
+        return response, connectorError;
     }
 }
