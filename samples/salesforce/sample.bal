@@ -1,25 +1,24 @@
+////
+//// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+////
+//// WSO2 Inc. licenses this file to you under the Apache License,
+//// Version 2.0 (the "License"); you may not use this file except
+//// in compliance with the License.
+//// You may obtain a copy of the License at
+////
+//// http://www.apache.org/licenses/LICENSE-2.0
+////
+//// Unless required by applicable law or agreed to in writing,
+//// software distributed under the License is distributed on an
+//// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+//// KIND, either express or implied.  See the License for the
+//// specific language governing permissions and limitations
+//// under the License.
+////
 //
-// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-//
-// WSO2 Inc. licenses this file to you under the Apache License,
-// Version 2.0 (the "License"); you may not use this file except
-// in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
-//
-
 package samples.salesforce;
-
 import ballerina.io;
-import ballerina.time;
+import ballerina.net.http;
 import src.salesforce;
 
 string sampleSObjectAccount = "Account";
@@ -30,30 +29,27 @@ string sampleSObjectOpportunity = "Opportunity";
 string sampleCustomObject = "Support_Account";
 string apiVersion = "v37.0";
 
-string url="https://wso2--wsbox.cs8.my.salesforce.com";
-string accessToken="00DL0000002ASPS!ASAAQHyEs5qD9BzTEevUWAIUOjGh0e9zyVIojgS1dLwNXhlMBXGre8IwNoruuV6joCjAR0qG1B8KhNOxYSczwOuRmCEQU6LG";
-string clientId="3MVG9MHOv_bskkhSA6dmoQao1M5bAQdCQ1ePbHYQKaoldqFSas7uechL0yHewu1QvISJZi2deUh5FvwMseYoF";
-string clientSecret="1164810542004702763";
-string refreshToken="5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxzBz58_XPXLUMpHViE8EqTjdV7pvnI1xq8pMfOA";
-string refreshTokenEndpoint="https://test.salesforce.com";
-string refreshTokenPath="/services/oauth2/token";
+string url = "https://wso2--wsbox.cs8.my.salesforce.com";
+string accessToken = "00DL0000002ASPS!ASAAQNTh1Gm.6ui_nkxaBfincHX.kUdAfp3ahxGKneXhA.jk_pmeSIxq5uj.ylL0H7pl25RKMjz7pzMdTVFN9NYFqNhowDzQ";
+string clientId = "3MVG9MHOv_bskkhSA6dmoQao1M5bAQdCQ1ePbHYQKaoldqFSas7uechL0yHewu1QvISJZi2deUh5FvwMseYoF";
+string clientSecret = "1164810542004702763";
+string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxy2ig1dCvGm4y3JZHcnGuFZHWOs2ypVdbTwyZBL";
+string refreshTokenEndpoint = "https://test.salesforce.com";
+string refreshTokenPath = "/services/oauth2/token";
 
-public function main (string[] args) {
+salesforce:SalesforceConnectorError connectorError;
+json[] jsonArrayResponse;
+json jsonResponse;
+salesforce:SalesforceConnectorError err;
 
-    endpoint<salesforce:SalesforceConnector> salesforceConnector {
-        create salesforce:SalesforceConnector(url, accessToken, clientId, clientSecret, refreshToken, refreshTokenEndpoint, refreshTokenPath);
-    }
+function main (string[] args) {
+    //time:Time now = time:currentTime();
+    //string endDateTime = now.format("yyyy-MM-dd'T'HH:mm:ssZ");
+    //time:Time weekAgo = now.subtractDuration(0, 0, 7, 0, 0, 0, 0);
+    //string startDateTime = weekAgo.format("yyyy-MM-dd'T'HH:mm:ssZ");
 
-    salesforceConnector.init();
-    io:println(string `OAuth2 client initialized`);
-
-    salesforce:SalesforceConnectorError err;
-    json jsonResponse;
-
-    time:Time now = time:currentTime();
-    string endDateTime = now.format("yyyy-MM-dd'T'HH:mm:ssZ");
-    time:Time weekAgo = now.subtractDuration(0, 0, 7, 0, 0, 0, 0);
-    string startDateTime = weekAgo.format("yyyy-MM-dd'T'HH:mm:ssZ");
+    salesforce:SalesforceConnector salesforceConnector = {};
+    salesforceConnector.init(url, accessToken, refreshToken, clientId, clientSecret, refreshTokenEndpoint, refreshTokenPath);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -163,7 +159,7 @@ public function main (string[] args) {
     io:println("\n------------------------MAIN METHOD: Executing SOQL queries ------------------");
     salesforce:QueryResult queryResult;
 
-    queryResult, err = salesforceConnector.query("SELECT name FROM Account");
+    queryResult, err = salesforceConnector.getQueryResult("SELECT name FROM Account");
     checkErrors(err);
     io:println(string `Found {{lengthof queryResult.records}} results. Next result URL: {{queryResult.nextRecordsUrl}}`);
 
