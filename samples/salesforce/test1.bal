@@ -21,29 +21,27 @@ error Error = {};
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    io:println("------------------------MAIN METHOD: API Versions----------------------");
-    json apiVersions;
-    var response = salesforceConnector.getAvailableApiVersions();
-    match response {
-    error conError => {
-        Error = {message:conError.message};
-        io:println(Error);
-    }
-    json result => {
-        io:println(response);
-        }
-    }
-
-    io:println("------------------------MAIN METHOD: API Versions----------------------");
-    var jresponse = salesforceConnector.getResourcesByApiVersion("v37.0");
-    match jresponse {
-    error conError => {
-        Error = {message:conError.message};
-        io:println(Error);
-    }
-    json result => {
+    io:println("\n\n------------------------MAIN METHOD: getAvailableApiVersions()----------------------");
+    try{
+        json jresponse = salesforceConnector.getAvailableApiVersions();
         io:println(jresponse);
-        }
+    } catch(error e){
+        io:println(e);
     }
 
+    io:println("\n\n------------------------MAIN METHOD: getResourcesByApiVersion()----------------------");
+    try{
+        json jresponse = salesforceConnector.getResourcesByApiVersion("v37.0");
+        io:println(jresponse);
+    } catch(error e){
+        io:println(e);
+    }
+
+    io:println("\n\n------------------------MAIN METHOD: getOrganizationLimits ()----------------------");
+    try{
+        json jresponse = salesforceConnector.getOrganizationLimits ();
+        io:println(jresponse);
+    } catch(error e){
+        io:println(e);
+    }
 }

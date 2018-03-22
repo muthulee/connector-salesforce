@@ -37,46 +37,85 @@ public function <SalesforceConnector sfConnector> init (string baseUrl, string a
 @Description {value:"Lists summary details about each REST API version available"}
 @Return {value:"Array of available API versions"}
 @Return {value:"Error occured"}
-public function <SalesforceConnector sfConnector> getAvailableApiVersions () returns json | error {
-
-error Error = {};
-http:Request request = {};
+public function <SalesforceConnector sfConnector> getAvailableApiVersions () returns json {
+json response;
 
     string path = "/services/data";
-    var response = sfConnector.oauth2.get(path, request);
-    match response {
-        http:HttpConnectorError conError => {
-                                             Error = {message:conError.message};
-                                             return Error;
-                                            }
-        http:Response result => {
-                                var jsonPayload = result.getJsonPayload();
-                                match jsonPayload {
-                                                    mime:EntityError entityError => {
-                                                        Error = {message:entityError.message};
-                                                    return Error;
-                                                    }
-                                                    json jsonResult => {
-                                                    return jsonResult;
-                                                    }
-                                }
+    try{
+        response = sfConnector.get(path);
         }
+    catch(error Error){
+        throw Error;
     }
+    return response;
 }
 
 public function <SalesforceConnector sfConnector> getResourcesByApiVersion (string apiVersion) returns json {
-
-// error Error = {};
-// http:Request request = {};
+json response;
 
     string path = "/services/data" + apiVersion;
+
 json response = 
 
 }
 
 
-public function <SalesforceConnector sfConnector> test(string path) returns json | error {
-    error Error = {};
+@Description {value:"Lists limits information for your organization"}
+@Return {value:"response message"}
+@Return {value:"Error occured "}
+public function <SalesforceConnector sfConnector> getOrganizationLimits () returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/limits";
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
+@Description {value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
+@Param {value:"queryReportOrListview: The parameter to get feedback on"}
+@Return {value:"response message"}
+@Return {value:"Error occured"}
+public function <SalesforceConnector sfConnector> explainQueryOrReportOrListview (string queryReportOrListview) returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/query/?explain=" + queryReportOrListview;
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
+@Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
+@Param {value:"sobjectName: The relevant sobject name"}
+@Param {value:"rowId: The row ID of the required record"}
+@Param {value:"fields: The comma separated set of required fields"}
+@Return {value:"response message"}
+@Return {value:"Error occured"}
+public function <SalesforceConnector sfConnector> getFieldValuesFromSObjectRecord (string sObjectName, string id, string fields) returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/sobjects/" + sObjectName + "/" + id + "?fields=" + fields;
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
+//============================ utility functions================================//
+public function <SalesforceConnector sfConnector> get(string path) returns json {
+   error err = {};
+   json jsonResult;
     http:Request request = {};
     var response = sfConnector.oauth2.get(path, request);
     match response {
@@ -162,8 +201,7 @@ public function <SalesforceConnector sfConnector> deleteRecord (string sObjectNa
                 sfError = {message:"Was not deleted"};
                 throw sfError;
             }
-        }
-    }
+            return true;
 }
 
 function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) returns string {
