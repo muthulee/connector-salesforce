@@ -29,7 +29,7 @@ import ballerina.io;
 @Param {value:"queryParamNames: query parameter names"}
 @Param {value:"queryParamValues: query parameter values"}
 @Return {value:"Prepared URL"}
-function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) (string) {
+function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) returns string {
     string url = "";
     error e;
 
@@ -74,7 +74,7 @@ function prepareUrl (string[] paths, string[] queryParamNames, string[] queryPar
 @Param {value:"isRequiredJsonPayload: gets true if response should contain a Json body, else false"}
 @Return {value:"Json Payload"}
 @Return {value:"Error occured"}
-function checkAndSetErrors (http:Response response, http:HttpConnectorError httpError, boolean isRequiredJsonPayload) (json, SalesforceConnectorError) {
+function checkAndSetErrors (http:Response response, http:HttpConnectorError httpError, boolean isRequiredJsonPayload) returns (json) | SalesforceConnectorError {
     SalesforceConnectorError connectorError;
     json responseBody;
 
@@ -119,7 +119,7 @@ function checkAndSetErrors (http:Response response, http:HttpConnectorError http
 @Description {value:"Function to set errors to SalesforceConnectorError type"}
 @Param {value:"error: error sent"}
 @Return {value:"SaleforceConnectorError occured"}
-function setError (error e) (SalesforceConnectorError) {
+function setError (error e) returns SalesforceConnectorError {
     SalesforceConnectorError connectorError = {messages:[], errors:[]};
     connectorError.messages[0] = e.message;
     connectorError.errors[0] = e;

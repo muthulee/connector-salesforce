@@ -24,44 +24,50 @@ public struct ApiVersion {
    string url;
 }
 
-public struct SalesforceError {
-   string message;
-   string errorCode;
+type SalesforceError object {
+   public{
+      string message,
+      string errorCode;
+   }
 }
 
-public struct SalesforceConnectorError {
-   string[] messages;
-   error[] errors;
-   SalesforceError[] salesforceErrors;
+type SalesforceConnectorError object {
+   public{
+      string[] messages,
+      error[] errors,
+      SalesforceError[] salesforceErrors;
+   }
 }
 
-public struct QueryResult {
-   boolean done;
-   int totalSize;
-   json[] records;
-   string nextRecordsUrl;
-}
+//public struct QueryResult {
+//   public{
+//      boolean done,
+//      int totalSize,
+//      json[] records,
+//      string nextRecordsUrl;
+//   }
+//}
 
 public struct SearchResult {
    json attributes;
    string Id;
 }
 
-public struct QueryPlan {
-   int cardinality;
-   string[] fields;
-   string leadingOperationType;
-   FeedbackNote[] notes;
-   float relativeCost;
-   int sobjectCardinality;
-   string sobjectType;
-}
+//public struct QueryPlan {
+//   int cardinality;
+//   string[] fields;
+//   string leadingOperationType;
+//   FeedbackNote[] notes;
+//   float relativeCost;
+//   int sobjectCardinality;
+//   string sobjectType;
+//}
 
-public struct FeedbackNote {
-   string description;
-   string[] fields;
-   string tableEnumOrId;
-}
+//public struct FeedbackNote {
+//   string description;
+//   string[] fields;
+//   string tableEnumOrId;
+//}
 
 //========================== QueryResult bound function ==========================//
 

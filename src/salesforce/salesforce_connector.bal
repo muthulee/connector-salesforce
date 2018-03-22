@@ -1,21 +1,21 @@
-////
-//// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-////
-//// WSO2 Inc. licenses this file to you under the Apache License,
-//// Version 2.0 (the "License"); you may not use this file except
-//// in compliance with the License.
-//// You may obtain a copy of the License at
-////
-//// http://www.apache.org/licenses/LICENSE-2.0
-////
-//// Unless required by applicable law or agreed to in writing,
-//// software distributed under the License is distributed on an
-//// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-//// KIND, either express or implied.  See the License for the
-//// specific language governing permissions and limitations
-//// under the License.
-////
 //
+// Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+//
+// WSO2 Inc. licenses this file to you under the Apache License,
+// Version 2.0 (the "License"); you may not use this file except
+// in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+
 package src.salesforce;
 
 import ballerina.net.http;
@@ -36,7 +36,7 @@ public function <SalesforceConnector sfConnector> init (string baseUrl, string a
 @Description {value:"Lists summary details about each REST API version available"}
 @Return {value:"Array of available API versions"}
 @Return {value:"Error occured"}
-public function <SalesforceConnector sfConnector> getAvailableApiVersions () (json[], SalesforceConnectorError) {
+public function <SalesforceConnector sfConnector> getAvailableApiVersions () returns json[] | SalesforceConnectorError {
     json response;
     json[] apiVersions;
     SalesforceConnectorError connectorError;
@@ -54,7 +54,7 @@ public function <SalesforceConnector sfConnector> getAvailableApiVersions () (js
 @Description {value:"Lists the resources available for the specified API version"}
 @Return {value:"response message"}
 @Return {value:"Error occurred"}
-public function <SalesforceConnector sfConnector> getResourcesByApiVersion (string apiVersion) (json, SalesforceConnectorError) {
+public function <SalesforceConnector sfConnector> getResourcesByApiVersion (string apiVersion) returns json | SalesforceConnectorError {
     json response;
     SalesforceConnectorError connectorError;
 
@@ -67,7 +67,7 @@ public function <SalesforceConnector sfConnector> getResourcesByApiVersion (stri
 @Description {value:"Lists limits information for your organization"}
 @Return {value:"response message"}
 @Return {value:"Error occured "}
-public function <SalesforceConnector sfConnector> getOrganizationLimits () (json, SalesforceConnectorError) {
+public function <SalesforceConnector sfConnector> getOrganizationLimits () returns json | SalesforceConnectorError {
     json response;
     SalesforceConnectorError connectorError;
 
@@ -79,119 +79,119 @@ public function <SalesforceConnector sfConnector> getOrganizationLimits () (json
 
 // ================================= Query ================================ //
 
-@Description {value:"Executes the specified SOQL query"}
-@Param {value:"query: The request SOQL query"}
-@Return {value:"returns QueryResult struct"}
-@Return {value:"Error occured"}
-public function <SalesforceConnector sfConnector> getQueryResult (string query) (QueryResult, SalesforceConnectorError) {
-    SalesforceConnectorError connectorError;
-    json response;
+//@Description {value:"Executes the specified SOQL query"}
+//@Param {value:"query: The request SOQL query"}
+//@Return {value:"returns QueryResult struct"}
+//@Return {value:"Error occured"}
+//public function <SalesforceConnector sfConnector> getQueryResult (string query) returns QueryResult | SalesforceConnectorError {
+//    SalesforceConnectorError connectorError;
+//    json response;
+//
+//    string path = prepareUrl([API_BASE_PATH, QUERY], [Q], [query]);
+//    response, connectorError = sendGetRequest(path);
+//
+//    QueryResult result = {};
+//
+//    if (connectorError != null) {
+//        return result, connectorError;
+//    }
+//
+//    result.done, _ = (boolean)response.done;
+//    result.totalSize, _ = (int)response.totalSize;
+//    result.records, _ = (json[])response.records;
+//    if (response.nextRecordsUrl != null) {
+//        result.nextRecordsUrl = response.nextRecordsUrl.toString();
+//    } else {
+//        result.nextRecordsUrl = null;
+//    }
+//
+//    return result, connectorError;
+//}
 
-    string path = prepareUrl([API_BASE_PATH, QUERY], [Q], [query]);
-    response, connectorError = sendGetRequest(path);
-
-    QueryResult result = {};
-
-    if (connectorError != null) {
-        return result, connectorError;
-    }
-
-    result.done, _ = (boolean)response.done;
-    result.totalSize, _ = (int)response.totalSize;
-    result.records, _ = (json[])response.records;
-    if (response.nextRecordsUrl != null) {
-        result.nextRecordsUrl = response.nextRecordsUrl.toString();
-    } else {
-        result.nextRecordsUrl = null;
-    }
-
-    return result, connectorError;
-}
-
-@Description {value:"Returns records that have been deleted because of a merge or delete, archived Task
-     and Event records"}
-@Param {value:"apiVersion: The api version to send request to"}
-@Param {value:"queryString: The request SOQL query"}
-@Return {value:"response message"}
-@Return {value:"Error occured."}
-public function <SalesforceConnector sfConnector> getAllQueries (string query) (QueryResult, SalesforceConnectorError) {
-    SalesforceConnectorError connectorError;
-    json response;
-
-    string path = prepareUrl([API_BASE_PATH, QUERYALL], [Q], [getQueryResult]);
-    response, connectorError = sendGetRequest(path);
-
-    QueryResult result = {};
-
-    if (connectorError != null) {
-        return result, connectorError;
-    }
-
-    result.done, _ = (boolean)response.done;
-    result.totalSize, _ = (int)response.totalSize;
-    result.records, _ = (json[])response.records;
-    if (response.nextRecordsUrl != null) {
-        result.nextRecordsUrl = response.nextRecordsUrl.toString();
-    } else {
-        result.nextRecordsUrl = null;
-    }
-
-    return result, connectorError;
-}
-
-@Description {value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
-@Param {value:"queryReportOrListview: The parameter to get feedback on"}
-@Return {value:"response message"}
-@Return {value:"Error occured"}
-public function <SalesforceConnector sfConnector> explainQueryOrReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
-    SalesforceConnectorError connectorError;
-    json response;
-
-    string path = prepareUrl([API_BASE_PATH, QUERY], [EXPLAIN], [queryReportOrListview]);
-    response, connectorError = sendGetRequest(path);
-
-    QueryPlan[] queryPlans = [];
-    if (connectorError != null) {
-        return queryPlans, connectorError;
-    }
-
-    json[] plans;
-    plans, _ = (json[])response.plans;
-
-    foreach i, plan in plans {
-        queryPlans[i], _ = <QueryPlan>plan;
-    }
-
-    return queryPlans, connectorError;
-}
-
-// ================================= Search ================================ //
-
-@Description {value:"Executes the specified SOSL search"}
-@Param {value:"searchString: The request SOSL string"}
-@Return {value:"returns results in SearchResult struct"}
-@Return {value:"Error occured"}
-public function <SalesforceConnector sfConnector> searchSOSLString (string searchString) (SearchResult[], SalesforceConnectorError) {
-    SalesforceConnectorError connectorError;
-    json response;
-
-    string path = prepareUrl([API_BASE_PATH, SEARCH], [Q], [searchString]);
-    response, connectorError = sendGetRequest(path);
-
-    SearchResult[] searchResults = [];
-    if (connectorError != null) {
-        return searchResults, connectorError;
-    }
-
-    json jsonResponse = response.searchRecords;
-    json[] jsonSearchResults;
-    jsonSearchResults, _ = (json[])jsonResponse;
-
-    foreach i, result in jsonSearchResults {
-        searchResults[i], _ = <SearchResult>result;
-    }
-    return searchResults, connectorError;
-}
+//@Description {value:"Returns records that have been deleted because of a merge or delete, archived Task
+//     and Event records"}
+//@Param {value:"apiVersion: The api version to send request to"}
+//@Param {value:"queryString: The request SOQL query"}
+//@Return {value:"response message"}
+//@Return {value:"Error occured."}
+//public function <SalesforceConnector sfConnector> getAllQueries (string query) (QueryResult, SalesforceConnectorError) {
+//    SalesforceConnectorError connectorError;
+//    json response;
+//
+//    string path = prepareUrl([API_BASE_PATH, QUERYALL], [Q], [getQueryResult]);
+//    response, connectorError = sendGetRequest(path);
+//
+//    QueryResult result = {};
+//
+//    if (connectorError != null) {
+//        return result, connectorError;
+//    }
+//
+//    result.done, _ = (boolean)response.done;
+//    result.totalSize, _ = (int)response.totalSize;
+//    result.records, _ = (json[])response.records;
+//    if (response.nextRecordsUrl != null) {
+//        result.nextRecordsUrl = response.nextRecordsUrl.toString();
+//    } else {
+//        result.nextRecordsUrl = null;
+//    }
+//
+//    return result, connectorError;
+//}
+//
+//@Description {value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
+//@Param {value:"queryReportOrListview: The parameter to get feedback on"}
+//@Return {value:"response message"}
+//@Return {value:"Error occured"}
+//public function <SalesforceConnector sfConnector> explainQueryOrReportOrListview (string queryReportOrListview) (QueryPlan[], SalesforceConnectorError) {
+//    SalesforceConnectorError connectorError;
+//    json response;
+//
+//    string path = prepareUrl([API_BASE_PATH, QUERY], [EXPLAIN], [queryReportOrListview]);
+//    response, connectorError = sendGetRequest(path);
+//
+//    QueryPlan[] queryPlans = [];
+//    if (connectorError != null) {
+//        return queryPlans, connectorError;
+//    }
+//
+//    json[] plans;
+//    plans, _ = (json[])response.plans;
+//
+//    foreach i, plan in plans {
+//        queryPlans[i], _ = <QueryPlan>plan;
+//    }
+//
+//    return queryPlans, connectorError;
+//}
+//
+//// ================================= Search ================================ //
+//
+//@Description {value:"Executes the specified SOSL search"}
+//@Param {value:"searchString: The request SOSL string"}
+//@Return {value:"returns results in SearchResult struct"}
+//@Return {value:"Error occured"}
+//public function <SalesforceConnector sfConnector> searchSOSLString (string searchString) (SearchResult[], SalesforceConnectorError) {
+//    SalesforceConnectorError connectorError;
+//    json response;
+//
+//    string path = prepareUrl([API_BASE_PATH, SEARCH], [Q], [searchString]);
+//    response, connectorError = sendGetRequest(path);
+//
+//    SearchResult[] searchResults = [];
+//    if (connectorError != null) {
+//        return searchResults, connectorError;
+//    }
+//
+//    json jsonResponse = response.searchRecords;
+//    json[] jsonSearchResults;
+//    jsonSearchResults, _ = (json[])jsonResponse;
+//
+//    foreach i, result in jsonSearchResults {
+//        searchResults[i], _ = <SearchResult>result;
+//    }
+//    return searchResults, connectorError;
+//}
 
 // ============================ ACCOUNT SObject: get, create, update, delete ===================== //
 
@@ -199,7 +199,7 @@ public function <SalesforceConnector sfConnector> searchSOSLString (string searc
 @Param {value:"accountId: The relevant account's id"}
 @Return {value:"response message"}
 @Return {value:"Error occured during oauth2 client invocation."}
-public function <SalesforceConnector sfConnector> getAccountById (string accountId) (json, SalesforceConnectorError) {
+public function <SalesforceConnector sfConnector> getAccountById (string accountId) returns json | SalesforceConnectorError {
     return getRecord(ACCOUNT, accountId);
 }
 

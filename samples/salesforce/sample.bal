@@ -16,7 +16,7 @@
 //// under the License.
 ////
 //
-//package samples.salesforce;
+package samples.salesforce;
 
 import ballerina.io;
 import ballerina.net.http;
