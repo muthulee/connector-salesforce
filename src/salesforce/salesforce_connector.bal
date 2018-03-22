@@ -96,6 +96,25 @@ json response;
     return response;
 }
 
+@Description {value:"Retrieve field values from a standard object record for a specified SObject ID"}
+@Param {value:"sobjectName: The relevant sobject name"}
+@Param {value:"rowId: The row ID of the required record"}
+@Param {value:"fields: The comma separated set of required fields"}
+@Return {value:"response message"}
+@Return {value:"Error occured"}
+public function <SalesforceConnector sfConnector> getFieldValuesFromSObjectRecord (string sObjectName, string id, string fields) returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/sobjects/" + sObjectName + "/" + id + "?fields=" + fields;
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
 //============================ utility functions================================//
 public function <SalesforceConnector sfConnector> get(string path) returns json {
    error err = {};
