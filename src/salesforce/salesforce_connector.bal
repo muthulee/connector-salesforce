@@ -62,22 +62,57 @@ json response;
     }
     return response;
 }
+
+@Description {value:"Lists limits information for your organization"}
+@Return {value:"response message"}
+@Return {value:"Error occured "}
+public function <SalesforceConnector sfConnector> getOrganizationLimits () returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/limits";
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
+@Description {value:"Get feedback on how Salesforce will execute the query, report, or list view based on performance"}
+@Param {value:"queryReportOrListview: The parameter to get feedback on"}
+@Return {value:"response message"}
+@Return {value:"Error occured"}
+public function <SalesforceConnector sfConnector> explainQueryOrReportOrListview (string queryReportOrListview) returns json {
+json response;
+
+    string path = "/services/data" + API_VERSION + "/query/?explain=" + queryReportOrListview;
+    try{
+        response = sfConnector.get(path);
+        }
+    catch(error Error){
+        throw Error;
+    }
+    return response;
+}
+
+//============================ utility functions================================//
 public function <SalesforceConnector sfConnector> get(string path) returns json {
-   error Error = {};
+   error err = {};
    json jsonResult;
     http:Request request = {};
     var response = sfConnector.oauth2.get(path, request);
     match response {
         http:HttpConnectorError conError => {
-                                             Error = {message:conError.message};
-                                             throw Error;
+                                             err = {message:conError.message};
+                                             throw err;
                                             }
         http:Response result => {
                                 var jsonPayload = result.getJsonPayload();
                                 match jsonPayload {
                                                     mime:EntityError entityError => {
-                                                        Error = {message:entityError.message};
-                                                    throw Error;
+                                                        err = {message:entityError.message};
+                                                    throw err;
                                                     }
                                                     json jsonRes => {
                                                         jsonResult = jsonRes;

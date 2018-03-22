@@ -21,7 +21,7 @@ error Error = {};
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    io:println("------------------------MAIN METHOD: API Versions----------------------");
+    io:println("\n\n------------------------MAIN METHOD: getAvailableApiVersions()----------------------");
     try{
         json jresponse = salesforceConnector.getAvailableApiVersions();
         io:println(jresponse);
@@ -29,9 +29,17 @@ error Error = {};
         io:println(e);
     }
 
-    io:println("\n\n------------------------MAIN METHOD: API Versions----------------------");
+    io:println("\n\n------------------------MAIN METHOD: getResourcesByApiVersion()----------------------");
     try{
         json jresponse = salesforceConnector.getResourcesByApiVersion("v37.0");
+        io:println(jresponse);
+    } catch(error e){
+        io:println(e);
+    }
+
+    io:println("\n\n------------------------MAIN METHOD: getOrganizationLimits ()----------------------");
+    try{
+        json jresponse = salesforceConnector.getOrganizationLimits ();
         io:println(jresponse);
     } catch(error e){
         io:println(e);
