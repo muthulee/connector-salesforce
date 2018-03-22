@@ -74,10 +74,9 @@ function prepareUrl (string[] paths, string[] queryParamNames, string[] queryPar
 @Param {value:"isRequiredJsonPayload: gets true if response should contain a Json body, else false"}
 @Return {value:"Json Payload"}
 @Return {value:"Error occured"}
-function checkAndSetErrors (http:Response response, http:HttpConnectorError httpError, boolean isRequiredJsonPayload) returns (json) | SalesforceConnectorError {
+function checkAndSetErrors (http:Response response, http:HttpConnectorError httpError, boolean isRequiredJsonPayload) returns json | SalesforceConnectorError {
     SalesforceConnectorError connectorError;
     json responseBody;
-
     if (httpError != null) {
         connectorError = {
                              messages:["Http error occurred -> status code: " +

@@ -24,76 +24,70 @@ public struct ApiVersion {
    string url;
 }
 
-type SalesforceError object {
-   public{
-      string message,
-      string errorCode;
-   }
+public struct SalesforceError {
+   string message;
+   string errorCode;
 }
 
-type SalesforceConnectorError object {
-   public{
-      string[] messages,
-      error[] errors,
-      SalesforceError[] salesforceErrors;
-   }
+public struct SalesforceConnectorError {
+   string[] messages;
+   error[] errors;
+   SalesforceError[] salesforceErrors;
 }
 
-//public struct QueryResult {
-//   public{
-//      boolean done,
-//      int totalSize,
-//      json[] records,
-//      string nextRecordsUrl;
-//   }
-//}
+public struct QueryResult {
+   boolean done;
+   int totalSize;
+   json[] records;
+   string nextRecordsUrl;
+}
 
 public struct SearchResult {
    json attributes;
    string Id;
 }
 
-//public struct QueryPlan {
-//   int cardinality;
-//   string[] fields;
-//   string leadingOperationType;
-//   FeedbackNote[] notes;
-//   float relativeCost;
-//   int sobjectCardinality;
-//   string sobjectType;
-//}
+public struct QueryPlan {
+   int cardinality;
+   string[] fields;
+   string leadingOperationType;
+   FeedbackNote[] notes;
+   float relativeCost;
+   int sobjectCardinality;
+   string sobjectType;
+}
 
-//public struct FeedbackNote {
-//   string description;
-//   string[] fields;
-//   string tableEnumOrId;
-//}
+public struct FeedbackNote {
+   string description;
+   string[] fields;
+   string tableEnumOrId;
+}
 
 //========================== QueryResult bound function ==========================//
 
-@Description {value:"If the query results are too large, retrieve the next batch of results using nextRecordUrl"}
-@Return {value:"returns QueryResult struct"}
-@Return {value:"Error occured"}
-public function <QueryResult queryResult> getNextQueryResult () (QueryResult, SalesforceConnectorError) {
-   SalesforceConnectorError connectorError;
-   json response;
-
-   response, connectorError = sendGetRequest(queryResult.nextRecordsUrl);
-
-   QueryResult result = {};
-
-   if (connectorError != null) {
-       return result, connectorError;
-   }
-
-   result.done, _ = (boolean)response.done;
-   result.totalSize, _ = (int)response.totalSize;
-   result.records, _ = (json[])response.records;
-   if (response.nextRecordsUrl != null) {
-       result.nextRecordsUrl = response.nextRecordsUrl.toString();
-   } else {
-       result.nextRecordsUrl = null;
-   }
-
-   return result, connectorError;
-}
+//@Description {value:"If the query results are too large, retrieve the next batch of results using nextRecordUrl"}
+//@Return {value:"returns QueryResult struct"}
+//@Return {value:"Error occured"}
+//public function <QueryResult queryResult> getNextQueryResult () returns QueryResult | SalesforceConnectorError {
+//   SalesforceConnectorError connectorError;
+//   json response;
+//
+//   response, connectorError = sendGetRequest(queryResult.nextRecordsUrl);
+//
+//   QueryResult result = {};
+//
+//   if (connectorError != null) {
+//       return result, connectorError;
+//   }
+//
+//   result.done, _ = (boolean)response.done;
+//   result.totalSize, _ = (int)response.totalSize;
+//   result.records, _ = (json[])response.records;
+//   if (response.nextRecordsUrl != null) {
+//       result.nextRecordsUrl = response.nextRecordsUrl.toString();
+//   } else {
+//       result.nextRecordsUrl = null;
+//   }
+//
+//   return result, connectorError;
+//}
