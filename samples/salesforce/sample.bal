@@ -18,50 +18,50 @@
 //
 package samples.salesforce;
 
-import ballerina.io;
-import ballerina.net.http;
-import src.salesforce;
+//import ballerina.io;
+//import ballerina.net.http;
+//import src.salesforce;
+//
+//string sampleSObjectAccount = "Account";
+//string sampleSObjectLead = "Lead";
+//string sampleSObjectProduct = "Product";
+//string sampleSObjectContact = "Contact";
+//string sampleSObjectOpportunity = "Opportunity";
+//string sampleCustomObject = "Support_Account";
+//string apiVersion = "v37.0";
+//
+//string url = "https://wso2--wsbox.cs8.my.salesforce.com";
+//string accessToken = "00DL0000002ASPS!ASAAQNTh1Gm.6ui_nkxaBfincHX.kUdAfp3ahxGKneXhA.jk_pmeSIxq5uj.ylL0H7pl25RKMjz7pzMdTVFN9NYFqNhowDzQ";
+//string clientId = "3MVG9MHOv_bskkhSA6dmoQao1M5bAQdCQ1ePbHYQKaoldqFSas7uechL0yHewu1QvISJZi2deUh5FvwMseYoF";
+//string clientSecret = "1164810542004702763";
+//string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxy2ig1dCvGm4y3JZHcnGuFZHWOs2ypVdbTwyZBL";
+//string refreshTokenEndpoint = "https://test.salesforce.com";
+//string refreshTokenPath = "/services/oauth2/token";
+//
+//salesforce:SalesforceConnectorError connectorError;
+//json[] jsonArrayResponse;
+//json jsonResponse;
+//salesforce:SalesforceConnectorError err;
 
-string sampleSObjectAccount = "Account";
-string sampleSObjectLead = "Lead";
-string sampleSObjectProduct = "Product";
-string sampleSObjectContact = "Contact";
-string sampleSObjectOpportunity = "Opportunity";
-string sampleCustomObject = "Support_Account";
-string apiVersion = "v37.0";
-
-string url = "https://wso2--wsbox.cs8.my.salesforce.com";
-string accessToken = "00DL0000002ASPS!ASAAQNTh1Gm.6ui_nkxaBfincHX.kUdAfp3ahxGKneXhA.jk_pmeSIxq5uj.ylL0H7pl25RKMjz7pzMdTVFN9NYFqNhowDzQ";
-string clientId = "3MVG9MHOv_bskkhSA6dmoQao1M5bAQdCQ1ePbHYQKaoldqFSas7uechL0yHewu1QvISJZi2deUh5FvwMseYoF";
-string clientSecret = "1164810542004702763";
-string refreshToken = "5Aep86161DM2BuiV6zOy.J2C.tQMhSDLfkeFVGqMEInbvqLfxy2ig1dCvGm4y3JZHcnGuFZHWOs2ypVdbTwyZBL";
-string refreshTokenEndpoint = "https://test.salesforce.com";
-string refreshTokenPath = "/services/oauth2/token";
-
-salesforce:SalesforceConnectorError connectorError;
-json[] jsonArrayResponse;
-json jsonResponse;
-salesforce:SalesforceConnectorError err;
-
-function main (string[] args) {
-    //time:Time now = time:currentTime();
-    //string endDateTime = now.format("yyyy-MM-dd'T'HH:mm:ssZ");
-    //time:Time weekAgo = now.subtractDuration(0, 0, 7, 0, 0, 0, 0);
-    //string startDateTime = weekAgo.format("yyyy-MM-dd'T'HH:mm:ssZ");
-    string endDateTime = "2020-01-01";
-    string startDateTime = "2018-01-01";
-
-
-    salesforce:SalesforceConnector salesforceConnector = {};
-    salesforceConnector.init(url, accessToken, refreshToken, clientId, clientSecret, refreshTokenEndpoint, refreshTokenPath);
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    io:println("------------------------MAIN METHOD: API Versions----------------------");
-    json[] apiVersions;
-    apiVersions, err = salesforceConnector.getAvailableApiVersions();
-    checkErrors(err);
-    io:println("Found " + lengthof apiVersions + " API versions");
+//function main (string[] args) {
+//    //time:Time now = time:currentTime();
+//    //string endDateTime = now.format("yyyy-MM-dd'T'HH:mm:ssZ");
+//    //time:Time weekAgo = now.subtractDuration(0, 0, 7, 0, 0, 0, 0);
+//    //string startDateTime = weekAgo.format("yyyy-MM-dd'T'HH:mm:ssZ");
+//    string endDateTime = "2020-01-01";
+//    string startDateTime = "2018-01-01";
+//
+//
+//    salesforce:SalesforceConnector salesforceConnector = {};
+//    salesforceConnector.init(url, accessToken, refreshToken, clientId, clientSecret, refreshTokenEndpoint, refreshTokenPath);
+//
+//    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    io:println("------------------------MAIN METHOD: API Versions----------------------");
+//    json[] apiVersions;
+//    apiVersions, err = salesforceConnector.getAvailableApiVersions();
+//    checkErrors(err);
+//    io:println("Found " + lengthof apiVersions + " API versions");
 
 //    jsonResponse, err = salesforceConnector.getResourcesByApiVersion(salesforce:API_VERSION);
 //    checkErrors(err);
@@ -357,4 +357,4 @@ function main (string[] args) {
 //            io:println(string `Connector error: {{err.errors[0].message}}`);
 //        }
 //    }
-}
+//}
