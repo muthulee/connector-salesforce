@@ -71,46 +71,137 @@ public function <SalesforceConnector sfConnector> getResourcesByApiVersion (stri
 
     string path = "/services/data" + apiVersion;
 json response = 
-    // var response = sfConnector.oauth2.get(path, request);
-    // match response {
-    //     http:HttpConnectorError conError => {
-    //                                          Error = {message:conError.message};
-    //                                          return Error;
-    //                                         }
-    //     http:Response result => {
-    //                             var jsonPayload = result.getJsonPayload();
-    //                             match jsonPayload {
-    //                                                 mime:EntityError entityError => {
-    //                                                     Error = {message:entityError.message};
-    //                                                 return Error;
-    //                                                 }
-    //                                                 json jsonResult => {
-    //                                                 return jsonResult;
-    //                                                 }
-    //                             }
-    //     }
-    // }
+
 }
+
+
 public function <SalesforceConnector sfConnector> test(string path) returns json | error {
-   error Error = {};
+    error Error = {};
     http:Request request = {};
     var response = sfConnector.oauth2.get(path, request);
     match response {
         http:HttpConnectorError conError => {
-                                             Error = {message:conError.message};
-                                             return Error;
-                                            }
+            Error = {message:conError.message};
+            return Error;
+        }
         http:Response result => {
-                                var jsonPayload = result.getJsonPayload();
-                                match jsonPayload {
-                                                    mime:EntityError entityError => {
-                                                        Error = {message:entityError.message};
-                                                    return Error;
-                                                    }
-                                                    json jsonResult => {
-                                                    return jsonResult;
-                                                    }
-                                }
+            var jsonPayload = result.getJsonPayload();
+            match jsonPayload {
+                mime:EntityError entityError => {
+                    Error = {message:entityError.message};
+                    return Error;
+                }
+                json jsonResult => {
+                    return jsonResult;
+                }
+            }
         }
     }
 }
+
+public function <SalesforceConnector sfConnector> createRecord (string sObjectName, string id) returns boolean {
+    http:Request request = {};
+    error sfError = {};
+    string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], null, null);
+    var response = sfConnector.oauth2.delete(path, request);
+    match response {
+        http:HttpConnectorError conError => {
+            Error = {message:conError.message};
+            throw Error;
+        }
+        http:Response result => {
+            if (result.statusCode == 200 || result.statusCode == 201 || result.statusCode == 204) {
+                json value = result.getJsonPayload();
+                return true;
+            } else {
+                sfError = {message:"Was not updated"};
+                throw sfError;
+            }
+        }
+    }
+}
+
+
+
+public function <SalesforceConnector sfConnector> updateRecord (string sObjectName, string id) returns boolean {
+    http:Request request = {};
+    error sfError = {};
+    string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], null, null);
+    var response = sfConnector.oauth2.delete(path, request);
+    match response {
+        http:HttpConnectorError conError => {
+            Error = {message:conError.message};
+            throw Error;
+        }
+        http:Response result => {
+            if (result.statusCode == 200 || result.statusCode == 201 || result.statusCode == 204) {
+                return true;
+            } else {
+                sfError = {message:"Was not updated"};
+                throw sfError;
+            }
+        }
+    }
+}
+
+
+public function <SalesforceConnector sfConnector> deleteRecord (string sObjectName, string id) returns boolean {
+    http:Request request = {};
+    error sfError = {};
+    string path = prepareUrl([API_BASE_PATH, SOBJECTS, sObjectName, id], null, null);
+    var response = sfConnector.oauth2.delete(path, request);
+    match response {
+        http:HttpConnectorError conError => {
+            Error = {message:conError.message};
+            throw Error;
+        }
+        http:Response result => {
+            if (result.statusCode == 200 || result.statusCode == 201 || result.statusCode == 204) {
+                return true;
+            } else {
+                sfError = {message:"Was not deleted"};
+                throw sfError;
+            }
+        }
+    }
+}
+
+function prepareUrl (string[] paths, string[] queryParamNames, string[] queryParamValues) returns string {
+    string url = "";
+    error e;
+
+    if (paths != null) {
+        foreach path in paths {
+            if (!path.hasPrefix("/")) {
+                url = url + "/";
+            }
+
+            url = url + path;
+        }
+    }
+
+    if (queryParamNames != null) {
+        url = url + "?";
+        boolean first = true;
+        foreach i, name in queryParamNames {
+            string value = queryParamValues[i];
+
+            value = uri:encode(value, ENCODING_CHARSET);
+            if (e != null) {
+                log:printErrorCause("Unable to encode value: " + value, e);
+                break;
+            }
+
+            if (first) {
+                url = url + name + "=" + value;
+                first = false;
+            } else {
+                url = url + "&" + name + "=" + value;
+            }
+        }
+    }
+
+    log:printDebug("Prepared URL: " + url);
+    return url;
+}
+
